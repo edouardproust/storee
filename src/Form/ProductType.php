@@ -21,13 +21,12 @@ class ProductType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => "Name",
                 'attr' => ['placeholder' => 'Choose a name for this product']
-            ])
+            ])  
             ->add('price', MoneyType::class, [
                 'currency' => "USD",
-                'attr' => ['placeholder' => 'Type a price without currency']])
-            // ->add('slug', TextType::class, [
-            //     'attr' => ['placeholder' => 'Choose a slug (or leave empty for the auto-generated one)']
-            // ])
+                'attr' => ['placeholder' => 'Type a price without currency'],
+                'divisor' => 100
+                ])
             ->add('shortDescription', TextareaType::class, [
                 'attr' => ['placeholder' => "Type a description to present this product, short (max 255 char.) but evocative."]
             ])
