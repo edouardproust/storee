@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Products{% endblock %}
+
+{% block body %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Products"}
+        }
+    }%}
+    <h1>Products</h1>
+    <table class="table align-middle">
+        <tr>
+            <th class="w-25">Name</th>
+            <th>Main image</th>
+            <th class="w-30">Short description</th>
+            <th>Category</th>
+            <th>Created on</th>
+            <th>Options</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>
+                <a href="{{path("product",{slug:product.slug, category_slug:product.category.slug})}}">
+                    {{product.name}}
+                </a>
+            </td>
+            <td><img src="{{product.mainImage}}" style="max-width:100px"></td>
+            <td class="small">{{product.shortDescription}}</td>
+            <td>{{product.category.name}}</td>
+            <td>{{product.createdAt|date('Y-m-d')}}</td>
+            <td>
+                <a href="{{path("product_edit",{id:product.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
+                <a href="{{path("product_delete",{id:product.id})}}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

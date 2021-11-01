@@ -1,0 +1,26 @@
+<div class="row">
+    {% for card in cards %}
+        <div class="col{% if style.width is defined %}-{{style.width}}{% endif %}">
+            {% if card.link is defined %}
+            <a href="{{card.link}}" class="text-reset">
+            {% endif %}
+            <div class="card
+                {% if style.bg is defined %} bg-{{ style.bg }}{% endif %}
+                {% if style.text is defined %} text-{{ style.text }}{% endif %}
+            ">
+                <div class="card-body text-center">
+                    <i class="mb-3 {{ card.icon }} fa-2x"></i>
+                    {% if card.title is defined %}
+                        <h3>{{ card.title }}</h3>
+                    {% endif %}
+                    {% if card.content is defined %}
+                        <div>{{ card.content }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% if card.link is defined %}
+            </a>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,18 @@
+ <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="{{path("home")}}">Home</a></li>
+        {% for link in links %}
+            {% if not loop.last %}
+                <li class="breadcrumb-item">
+                    <a href="{{link.url}}">
+                        {{link.name}}
+                    </a>
+                </li>
+            {% else %}
+                <li class="breadcrumb-item active" aria-current="page">
+                    {{link.name}}
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>

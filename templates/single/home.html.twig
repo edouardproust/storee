@@ -1,0 +1,29 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+    <section class="mb-5">
+        <h2>Our last products</h2>
+        <div class="row">
+            {% for p in products %}
+                <div class="col-4">
+                    {% include "_parts/_product-card.html.twig" with { product: p } %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    <section>
+        <h2>Why choose us?</h2>
+        {% include "_parts/_icon-cards.html.twig" with {
+            style: {"bg": "primary", "text": "white"},
+            cards: {
+                1: { icon: "fas fa-check", content: "Money back guarantee" }, 
+                2: { icon: "fa fa-truck", content: "Fast delivery" },
+                3: { icon: "fa fa-leaf", content: "Green products" },
+                4: { icon: "fa fa-smile", content: "Happy clients" }
+            }
+        } %}
+        <i class="fa fa-envira" aria-hidden="true"></i>
+    </section>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit a product{% endblock %}
+
+{% block body %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Products", url:path("admin_products")},
+            2:{name:"Edit " ~ product.name}
+        }
+    }%}
+   <h1>Edit {{product.name}}</h1>
+
+   {{ form_start(productForm) }}
+
+   {{ form_errors(productForm) }}
+
+    <div class="row">
+        <div class="col">
+            {{ form_row(productForm.name) }}
+            {{ form_row(productForm.price) }}
+            {{ form_row(productForm.shortDescription) }}
+        </div>
+        <div class="col">
+            {# {{ form_row(productForm.slug) }} #}
+            {{ form_row(productForm.mainImage) }}
+            {{ form_row(productForm.category) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Update product</button>
+
+   {{ form_end(productForm) }}
+
+{% endblock %}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}{% endblock %} - Storee</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+            <link rel="stylesheet" href="/css/bootstrap.css">
+            <link rel="stylesheet" href="/css/style.css">
+            <link rel="stylesheet" href="/font/montserrat/montserrat.css">
+            <link defer rel="stylesheet" href="/font/font-awesome/all.css">
+        {% endblock %}
+        {% block javascripts %}
+            <script defer src="/js/bootstrap.min.js"></script>
+        {% endblock %}
+    </head>
+    <body>
+        {% include "_parts/_navbar.html.twig" with {
+            links: {
+                0:{text: "Home", path: path("home")},
+                1:{text: "Catalog", path: path("catalog")},
+                2:{text: "About", path: path("about")},
+                3:{icon: "fas fa-user", path: path("account")},
+                4:{icon: "fas fa-shopping-cart", path: path("cart")}
+            } 
+        } %}
+        <div class="container my-5">
+            {% block body %}{% endblock %}
+        </div>
+        {% include "_parts/_footer.html.twig" with {
+            links: {
+                0:{text: "Contact", path: path("contact")},
+                1:{text: "Shipping", path: path("faq",{section:"shipping"})},
+                2:{text: "FAQ", path: path("faq")},
+                3:{text: "Terms & Conditions", path: path("terms")},
+                4:{text: "Privacy policy", path: path("privacy")},
+                5:{text: "Admin", path: path("admin")}
+            }
+        }%}
+    </body>
+</html>

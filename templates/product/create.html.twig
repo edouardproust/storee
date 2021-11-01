@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create a product{% endblock %}
+
+{% block body %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Create a product"}
+        }
+    }%}
+   <h1>Create a product</h1>
+
+   {{ form_start(productForm) }}
+
+   {{ form_errors(productForm) }}
+
+    <div class="row">
+        <div class="col">
+            {{ form_row(productForm.name) }}
+            {{ form_row(productForm.price) }}
+            {{ form_row(productForm.shortDescription) }}
+        </div>
+        <div class="col">
+            {# {{ form_row(productForm.slug) }} #}
+            {{ form_row(productForm.mainImage) }}
+            {{ form_row(productForm.category) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+
+   {{ form_end(productForm) }}
+
+{% endblock %}

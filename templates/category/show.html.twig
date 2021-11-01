@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{category.name|title}}{% endblock %}
+
+{% block body %}
+   {% include "_parts/_breadcrumb.html.twig" with {
+       links: {
+           1: {name: category.name}
+       }
+   } %}
+    <h1>All {{category.name|title}} products</h1>
+    <div class="row g-4">
+        {% for product in category.products %}
+            <div class="col-4">
+                {% include "_parts/_product-card.html.twig" with {
+                    product: product
+                } %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

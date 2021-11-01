@@ -1,0 +1,47 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.h1,h1 {
+	margin-bottom: 3rem;
+    color: gray;
+}
+.h2,h2 {
+	margin-bottom: 2rem;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* Position */
+
+.sticky {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+}
+
+/* Tables */
+
+th.w-10 {
+    width: 10%;
+}
+th.w-15 {
+    width: 15%;
+}
+th.w-20 {
+    width: 20%;
+}
+th.w-25 {
+    width: 25%;
+}
+th.w-30 {
+    width: 30%;
+}
+th.w-40 {
+    width: 40%;
+}
+th.w-50 {
+    width: 50%;
+}

@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block body %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Categories"}
+        }
+    }%}
+    <h1>Categories</h1>
+    <table class="table">
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Options</th>
+        </tr>
+        {% for category in categories %}
+        <tr>
+            <td>{{category.name}}</td>
+            <td>
+                <a href="{{path("category_edit",{id:category.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
+                <a href="{{path("category_delete",{id:category.id})}}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

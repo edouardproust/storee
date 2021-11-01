@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create a category{% endblock %}
+
+{% block body %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Create a category"}
+        }
+    }%}
+   <h1>Create a category</h1>
+
+   {{ form_start(categoryForm) }}
+
+   {{ form_errors(categoryForm) }}
+
+    <div class="row">
+        <div class="col">
+            {{ form_row(categoryForm.name) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+
+   {{ form_end(categoryForm) }}
+
+{% endblock %}

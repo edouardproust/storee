@@ -1,0 +1,20 @@
+<div class="card
+    {% if style.bg is defined %} bg-{{ style.bg }}{% endif %}
+    {% if style.text is defined %} text-{{ style.text }}{% endif %}
+">
+    <img src="{{ product.mainImage }}" class="card-img-top" alt="{{ product.name }}">
+    <div class="card-body{% if icon is defined %} text-center{% endif %}">
+            <a href="{{ path("product", {slug:product.slug, category_slug:product.category.slug}) }}">
+                <h3>{{product.name}}</h3>
+            </a>
+        {% if product.category is defined %}
+            <a href="{{ path("category", {slug:product.category.slug}) }}">
+                <div class="badge bg-light mb-2">{{product.category.name}}</div>
+            <a>
+        {% endif %}
+        <div class="mb-2"><b>{{product.priceWithCurrency}}</b></div>
+        <div class="small">{{ product.shortDescription }}</div>
+        <a href="{{ path("product", {slug:product.slug, category_slug:product.category.slug}) }}"class="btn mt-3 btn-outline-primary">Details</a>
+        <a href="#"class="btn mt-3 btn-primary">Add to cart</a>
+    </div>
+</div>

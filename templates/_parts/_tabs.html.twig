@@ -1,0 +1,18 @@
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    {% for tab in tabs %}
+        {% set id = slugger.slug(tab.name)|lower %}
+        <button class="nav-link{% if tab.name == tabs[0].name %} active{% endif %}" id="nav-{{id}}-tab" data-bs-toggle="tab" data-bs-target="#nav-{{id}}" type="button" role="tab" aria-controls="nav-{{id}}" aria-selected="true">
+            {{tab.name}}
+        </button>
+    {% endfor %}
+    </div>
+</nav>
+<div class="tab-content py-4" id="nav-tabContent">
+    {% for tab in tabs %}
+        {% set id = slugger.slug(tab.name)|lower %}
+        <div class="tab-pane fade{% if tab.name == tabs[0].name %} show active{% endif %}" id="nav-{{id}}" role="tabpanel" aria-labelledby="nav-{{id}}-tab">
+            {{tab.content}}
+        </div>
+    {% endfor %}
+</div>
