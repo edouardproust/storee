@@ -12,7 +12,8 @@
     <h1>Products</h1>
     <table class="table align-middle">
         <tr>
-            <th class="w-25">Name</th>
+            <th class="w-20">Name</th>
+            <th>Price</th>
             <th>Main image</th>
             <th class="w-30">Short description</th>
             <th>Category</th>
@@ -26,6 +27,7 @@
                     {{product.name}}
                 </a>
             </td>
+            <td>{{product.priceWithCurrency}}</td>
             <td><img src="{{product.mainImage}}" style="max-width:100px"></td>
             <td class="small">{{product.shortDescription}}</td>
             <td>{{product.category.name}}</td>

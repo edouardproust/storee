@@ -4,8 +4,10 @@ namespace App\Form;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Form\Type\PriceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -20,12 +22,10 @@ class ProductType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => "Name",
-                'attr' => ['placeholder' => 'Choose a name for this product']
+                'attr' => ['placeholder' => 'Choose a name for this product'],
             ])  
-            ->add('price', MoneyType::class, [
-                'currency' => "USD",
-                'attr' => ['placeholder' => 'Type a price without currency'],
-                'divisor' => 100
+            ->add('price', PriceType::class, [
+                'attr' => ['placeholder' => 'Type a price without currency']
                 ])
             ->add('shortDescription', TextareaType::class, [
                 'attr' => ['placeholder' => "Type a description to present this product, short (max 255 char.) but evocative."]

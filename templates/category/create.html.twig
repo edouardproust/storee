@@ -12,16 +12,13 @@
    <h1>Create a category</h1>
 
    {{ form_start(categoryForm) }}
-
-   {{ form_errors(categoryForm) }}
-
-    <div class="row">
-        <div class="col">
-            {{ form_row(categoryForm.name) }}
+    {{ form_errors(categoryForm) }}
+        <div class="row">
+            <div class="col">
+                {{ form_row(categoryForm.name) }}
+            </div>
         </div>
-    </div>
-    <button type="submit" class="btn btn-primary">Create</button>
-
+        <button type="submit" class="btn btn-primary">Create</button>
    {{ form_end(categoryForm) }}
 
 {% endblock %}
