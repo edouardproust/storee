@@ -17,12 +17,16 @@
     </head>
     <body>
         {% include "_parts/_navbar.html.twig" with {
-            links: {
-                0:{text: "Home", path: path("home")},
-                1:{text: "Catalog", path: path("catalog")},
-                2:{text: "About", path: path("about")},
+            leftLinks: {
+                0:{text: "Catalog", path: path("catalog")},
+                1:{text: "About", path: path("about")},
+            },
+            rightLinks: {
+                0:{icon: "fas fa-shopping-cart", path: path("cart")},
+                1:{text: "Sign in", path: path("signin"), class:"small"},
+                2:{btn: "Log in", path: path("login"), class:"btn-sm"},
                 3:{icon: "fas fa-user", path: path("account")},
-                4:{icon: "fas fa-shopping-cart", path: path("cart")}
+                4:{btn: "Log out", path: path("logout"), class:"btn-sm", color: "danger"}
             } 
         } %}
         <div class="container my-5">

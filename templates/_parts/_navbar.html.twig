@@ -1,20 +1,22 @@
 <header class="py-3 mb-4 border-bottom">
-    <div class="mx-3 d-flex flex-wrap justify-content-center">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark">
-        <img src="/img/logo/logo-color.png" height="30" alt="logo-storee-online-store">
-        </a>
-        <ul class="nav nav-pills">
-            {% for link in links %}
-                <li class="nav-item">
-                    <a href="{{link.path}}" class="nav-link{% if link.path == app.request.requestUri %} active{% endif %}" aria-current="page">
-                        {% if link.text is defined %}
-                            {{link.text}}
-                        {% else %}
-                            <i class="{{link.icon}}"></i>
-                        {% endif %}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+
+    <nav class="navbar navbar-expand-md">
+        <div class="container-fluid">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-3">
+                <img src="/img/logo/logo-color.png" height="30" alt="logo-storee-online-store">
+            </a>
+            <div class="me-auto">
+                {% include "_parts/_navbar_links.html.twig" with {
+                    links: leftLinks
+                } %}
+            </div>
+            {% include "_parts/_navbar_links.html.twig" with {
+                links: rightLinks
+            } %}
+        </div>
+    </nav>
+
+
+
+
 </header>

@@ -1,0 +1,19 @@
+<ul class="navbar-nav nav-pills align-items-center">
+{% for link in links %}
+    <li class="nav-item">
+        {% if link.btn is defined  %}
+            <a href="{{link.path}}" class="mx-1">
+                <div class="btn btn-{% if link.color is defined %}{{ link.color }}{% else %}primary{% endif %}{% if link.class is defined %} {{ link.class }}{% endif %}">{{link.btn}}</div>
+            </a>
+        {% else %}
+            <a href="{{link.path}}" class="nav-link{% if link.class is defined %} {{ link.class }}{% endif %}{% if link.path == app.request.requestUri %} active{% endif %}">
+                {% if link.text is defined %}
+                    {{link.text}}
+                {% else %}
+                    <i class="{{link.icon}}"></i>
+                {% endif %}
+            </a>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
