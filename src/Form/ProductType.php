@@ -38,6 +38,7 @@ class ProductType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => '-- Choose a category --'
             ])
+            ->setRequired(false)
         ;
     }
 

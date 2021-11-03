@@ -4,7 +4,9 @@ use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\Collection;
+use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SingleController extends AbstractController {
 
@@ -18,7 +20,8 @@ class SingleController extends AbstractController {
     /**
      * @Route("/", name="home")
      */
-    public function home() {
+    public function home(): Response  
+    {
         $products = $this->productRepository->findBy([], ["createdAt" => "DESC"], 3);
         return $this->render('single/home.html.twig', [
             'products' => $products
@@ -28,7 +31,8 @@ class SingleController extends AbstractController {
     /**
      * @Route("/all-products", name="catalog")
      */
-    public function catalog() {
+    public function catalog(): Response  
+    {
         $products = $this->productRepository->findBy([], ["createdAt" => "DESC"]);
         return $this->render('single/catalog.html.twig', [
             'products' => $products
@@ -38,21 +42,24 @@ class SingleController extends AbstractController {
     /**
      * @Route("/about", name="about")
      */
-    public function about() {
+    public function about(): Response 
+    {
         return $this->render('single/about.html.twig');
     }
 
     /**
      * @Route("/contact", name="contact")
      */
-    public function contact() {
+    public function contact(): Response  
+    {
         return $this->render('single/contact.html.twig');
     }
 
     /**
      * @Route("/faq/{section?}", name="faq")
      */
-    public function faq($section) {
+    public function faq($section): Response  
+    {
         return $this->render('single/faq.html.twig', [
             'section' => $section
         ]);
@@ -61,32 +68,35 @@ class SingleController extends AbstractController {
     /**
      * @Route("/terms", name="terms")
      */
-    public function terms() {
+    public function terms(): Response  
+    {
         return $this->render('single/terms.html.twig');
     }
 
     /**
      * @Route("/privacy", name="privacy")
      */
-    public function privacy() {
+    public function privacy(): Response  
+    {
         return $this->render('single/privacy.html.twig');
     }
 
     /**
      * @Route("/page-not-found", name="404")
      */
-    public function error404() {
+    public function error404(): Response  
+    {
         return $this->render('single/404.html.twig');
     }
 
     /**
      * @Route("/test", name="test")
      */
-    public function test(ProductRepository $productRepo) {
-        $faker = \Faker\Factory::create();
-        $faker->addProvider((new \Bezhanov\Faker\Provider\Commerce($faker)));
-        $categories = $faker->category();
-        dump($categories);
+    public function test(ValidatorInterface $validator): Response  
+    {
+        $age = 200;
+        $result = $validator->validate($age, new GreaterThan(300));
+        dd($result);
         return $this->render('test.html.twig');
     }
 

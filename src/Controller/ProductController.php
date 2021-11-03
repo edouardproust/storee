@@ -47,12 +47,15 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/create", name="product_create")
      */
-    public function create(Request $req): Response
+    public function create(Request $req, CategoryRepository $catRepo): Response
     {
         $product = new Product;
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($req);
-        if($form->isSubmitted()) {
+        if($form->isSubmitted() && $form->isValid()) {
+            if($product->getCategory() === null) {
+                $product->setCategory($catRepo->findOneBy(['slug' => 'undefined']));
+            }
             $product->setSlug(strtolower($this->slugger->slug($product->getName())));
             $product->setCreatedAt(new \DateTime("now"));
             $this->entityManager->persist($product);
@@ -70,9 +73,11 @@ class ProductController extends AbstractController
     public function edit($id, Request $req, EntityManagerInterface $em): Response
     {
         $product = $this->productRepo->find($id);
-        $form = $this->createForm(ProductType::class, $product);
+        $form = $this->createForm(ProductType::class, $product, [
+            "validation_groups" => ["Default", "edit"]
+        ]);
         $form->handleRequest($req);
-        if($form->isSubmitted()) {
+        if($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             return $this->redirectToRoute("admin_products");
         }

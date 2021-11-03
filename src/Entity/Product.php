@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProductRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
@@ -19,11 +20,15 @@ class Product
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="The product name cannot be blank.")
+     * @Assert\Length(min=3, minMessage="Your product name is too short. It should have {{ limit }} characters or more.")
      */
     private $name;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotBlank(message="The price cannot be blank.")
+     * @Assert\Type(type="integer", message="Your product price must be a number.")
      */
     private $price;
 
@@ -34,16 +39,21 @@ class Product
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank(message="A short description must be defined.")
+     * @Assert\Length(min=5, minMessage="The short description should have {{ limit }} characters or more.")
      */
     private $shortDescription;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="A main image must be defined.")
+     * @Assert\Url(message="Main picture must be a valid URL.")
      */
     private $mainImage;
 
     /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="products")
+     * @Assert\NotBlank(message="You have to choose a category", groups={"edit"})
      */
     private $category;
 
@@ -62,7 +72,7 @@ class Product
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -91,7 +101,7 @@ class Product
         return $floatPrice . $currencySign;
     }
 
-    public function setPrice(int $price): self
+    public function setPrice(?int $price): self
     {
         $this->price = $price;
 
@@ -115,7 +125,7 @@ class Product
         return $this->shortDescription;
     }
 
-    public function setShortDescription(string $shortDescription): self
+    public function setShortDescription(?string $shortDescription): self
     {
         $this->shortDescription = $shortDescription;
 
@@ -127,7 +137,7 @@ class Product
         return $this->mainImage;
     }
 
-    public function setMainImage(string $mainImage): self
+    public function setMainImage(?string $mainImage): self
     {
         $this->mainImage = $mainImage;
 
@@ -151,7 +161,7 @@ class Product
         return $this->createdAt;
     }
 
-    public function setCreatedAt(?\DateTime $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
