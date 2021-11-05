@@ -2,14 +2,34 @@
 {% for link in links %}
     <li class="nav-item">
         {% if link.btn is defined  %}
-            <a href="{{link.path}}" class="mx-1">
+            <a href="{{link.path}}" class="mx-2">
                 <div class="btn btn-{% if link.color is defined %}{{ link.color }}{% else %}primary{% endif %}{% if link.class is defined %} {{ link.class }}{% endif %}">{{link.btn}}</div>
             </a>
+        {% elseif link.dropdown is defined %}
+            <span class="dropdown nav-link{% if link.basePath in app.request.requestUri %} active{% endif %}">
+                <span class="dropdown-toggle" type="button" id="{{link.dropdown}}_menu" data-bs-toggle="dropdown">
+                    {{ link.dropdown }}
+                </span>
+                <ul class="dropdown-menu">
+                {% for itemLink in link.items %}
+                    {% if itemLink.path is not defined %}
+                        {% set path = link.basePath ~ itemLink.slug %}
+                    {% else %}
+                        {% set path = itemLink.path %}
+                    {% endif %}
+                    <li>
+                        <a class="dropdown-item {% if path == app.request.requestUri %} active{% endif %}" href="{{path}}">
+                            {{itemLink.name}}
+                        </a>
+                    </li>
+                {% endfor %}
+                </ul>
+            </span>
         {% else %}
             <a href="{{link.path}}" class="nav-link{% if link.class is defined %} {{ link.class }}{% endif %}{% if link.path == app.request.requestUri %} active{% endif %}">
                 {% if link.text is defined %}
                     {{link.text}}
-                {% else %}
+                {% elseif link.icon is defined %}
                     <i class="{{link.icon}}"></i>
                 {% endif %}
             </a>

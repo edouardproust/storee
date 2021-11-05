@@ -8,7 +8,7 @@
            1: {name: category.name}
        }
    } %}
-    <h1>All {{category.name|title}} products</h1>
+    <h1>{{category.name|title}}</h1>
     <div class="row g-4">
         {% for product in category.products %}
             <div class="col-4">
