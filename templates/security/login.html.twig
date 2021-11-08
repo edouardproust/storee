@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+{{ form_start(loginForm) }}
+{{ form_errors(loginForm) }}
+{{ form_widget(loginForm) }}
+<button class="btn btn-primary">Connect</button>
+{{ form_end(loginForm) }}
+{% endblock %}
