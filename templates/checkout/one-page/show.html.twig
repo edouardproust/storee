@@ -1,0 +1,16 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Checkout" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Cart", url:path("cart")},
+            1:{name:"Checkout"}
+        }
+    }%}
+{% endblock %}
+
+{% block content %}
+    Checkout form
+{% endblock %}

@@ -1,6 +1,6 @@
 <div class="row">
     {% for card in cards %}
-        <div class="col{% if style.width is defined %}-{{style.width}}{% endif %}">
+        <div class="col{% if style.width is defined %}-{{style.width}}{% endif %} mb-4">
             {% if card.link is defined %}
             <a href="{{card.link}}" class="text-reset">
             {% endif %}

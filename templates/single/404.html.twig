@@ -1,9 +1,14 @@
-{% extends 'base.html.twig' %}
+{% extends 'default.html.twig' %}
 
-{% block title %}Page not found{% endblock %}
+{% set title = "Page not found :(" %}
 
-{% block body %}
-    <h1>Page not found :(</h1>
-    <p>The page you were searching for does not exist. Your request has returned a 404 error.</p>
+{% block content %}
+    <p>
+        {% if error %}
+            {{ error.message }}
+        {% else %}
+            The page you were searching for does not exist. Your request has returned a 404 error.
+        {% endif %}
+    </p>
     <a href="{{path("home")}}" class="btn btn-outline-primary">Go to homepage</a>
 {% endblock %}

@@ -2,44 +2,59 @@
 
 namespace App\Controller;
 
+use App\Form\UserType;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
     /**
-     * @Route("/my-account", name="account")
+     * @Route("/account", name="user_show")
      */
-    public function show(): Response
+    public function show(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
     {
-        return $this->render('user/show.html.twig');
+        $user = $this->getUser();
+        $form = $this->createForm(UserType::class, $user);
+        $existingPassword = $user->getPassword();
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()) {
+            if($user->getPassword() == null) {
+                $user->setPassword($existingPassword);
+            } else {
+                $user->setPassword($hasher->hashPassword($user, $user->getPassword()));
+            }
+            $em->persist($user);
+            $em->flush();
+            $this->addFlash('success', 'Your informations have been updated successfully.');
+        }
+        return $this->render('user/show.html.twig', [
+            'userForm' => $form->createView()
+        ]);
     }
 
     /**
-     * @Route("/login", name="login")
+     * @Route("/register", name="user_create")
      */
-    public function login(): Response
+    public function create(): Response
     {
-        return $this->render('user/login.html.twig');
+        return $this->render('user/create.html.twig');
     }
 
-    /**
-     * @Route("/logout", name="logout")
+        /**
+     * @Route("/user/delete/{id}", name="user_delete")
      */
-    public function logout(): Response
+    public function delete($id, UserRepository $userRepo, EntityManagerInterface $em): Response
     {
-        return $this->redirectToRoute("login");
+        $user = $userRepo->find($id);
+        $em->remove($user);
+        $em->flush();
+        return $this->redirectToRoute("admin_products");
+        return $this->redirectToRoute("home");
     }
-
-    /**
-     * @Route("/signin", name="signin")
-     */
-    public function signin(): Response
-    {
-        return $this->render('user/signin.html.twig');
-    }
-
-
 
 }

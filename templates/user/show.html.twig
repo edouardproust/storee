@@ -1,8 +1,32 @@
-{% extends 'base.html.twig' %}
+{% extends 'default.html.twig' %}
 
-{% block title %}My account{% endblock %}
+{% set u = app.user %}
+{% set title = "Hello " ~ u.firstname ~ " " ~ u.lastname %}
 
-{% block body %}
-    <h1>My account</h1>
-    Page under construction! Please come back later.
+{% block content %}
+    <h3>My orders</h3>
+    No orders yet.
+    <h3>My informations</h3>
+    {{ form_start(userForm) }}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-sm-6">{{ form_row(userForm.email) }}</div>
+                <div class="col-sm-6">{{ form_row(userForm.password) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">{{ form_row(userForm.firstname) }}</div>
+                <div class="col-sm-6">{{ form_row(userForm.lastname) }}</div>
+            </div>
+            {{ form_row(userForm.street) }}
+            <div class="row">
+                <div class="col-sm-6">{{ form_row(userForm.postcode) }}</div>
+                <div class="col-sm-6">{{ form_row(userForm.city) }}</div>
+            </div>
+            {{ form_row(userForm.country) }}
+            {{ form_row(userForm.phone) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary text-left">Update my informations</button>
+    {{ form_end(userForm) }}
 {% endblock %}

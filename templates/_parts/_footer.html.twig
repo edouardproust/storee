@@ -2,7 +2,7 @@
     <ul class="nav justify-content-center border-top border-bottom py-3 mb-3">
     {% set links = {
       0:{text: "Contact", path: path("contact")},
-      1:{text: "Shipping", path: path("faq",{section:"shipping"})},
+      1:{text: "Shipping", path: path("faq",{_fragment:"shipping"})},
       2:{text: "FAQ", path: path("faq")},
       3:{text: "Terms & Conditions", path: path("terms")},
       4:{text: "Privacy policy", path: path("privacy")},

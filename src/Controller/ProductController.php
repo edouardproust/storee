@@ -6,13 +6,11 @@ use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Route as RoutingRoute;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ProductController extends AbstractController
@@ -30,7 +28,7 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Route("/{category_slug}/{slug}", name="product")
+     * @Route("/{category_slug}/{slug}", name="product", priority=-1)
      */
     public function show($slug): Response
     {

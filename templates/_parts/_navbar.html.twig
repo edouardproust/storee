@@ -6,18 +6,25 @@
             </a>
             <div class="me-auto">
                 {% include "_parts/_navbar_links.html.twig" with {links: {
-                    0:{text: "All products", path: path("catalog")},
+                    0:{text: "All products", path: path("catalog"), badge:"sale"},
                     1:{dropdown: "Categories", items: categoryRepository.findAll(), basePath:"/category/", color:"primary"},
                     2:{text: "About", path: path("about")}
                 }} %}
             </div>
+            {% include "_parts/_navbar_links.html.twig" with {links: {
+                    0:{icon: "fas fa-shopping-cart", path: path("cart"), badge: cartService.productsNumber},
+            }} %}
+            {% if not app.user %}
                 {% include "_parts/_navbar_links.html.twig" with {links: {
-                    0:{icon: "fas fa-shopping-cart", path: path("cart")},
-                    1:{text: "Sign in", path: path("signin"), class:"small"},
-                    2:{btn: "Log in", path: path("login"), class:"btn-sm"},
-                    3:{icon: "fas fa-user", path: path("account")},
-                    4:{btn: "Log out", path: path("logout"), class:"btn-sm", color: "danger"}
+                    1:{text: "Register", path: path("user_create"), class:"small"},
+                    2:{btn: "Log in", path: path("security_login"), class:"btn-sm"}
                 }} %}
+            {% else %}    
+                {% include "_parts/_navbar_links.html.twig" with {links: {
+                    3:{icon: "fas fa-user", path: path("user_show")},
+                    4:{btn: "Log out", path: path("security_logout"), class:"btn-sm", color: "danger"}
+                }} %}
+            {% endif %}
         </div>
     </nav>
 </header>

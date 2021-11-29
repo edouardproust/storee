@@ -1,9 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'default.html.twig' %}
 
-{% block title %}All products{% endblock %}
+{% set title = "All products" %}
 
-{% block body %}
-    <h1>All products</h1>
+{% block content %}
     <div class="row g-4">
         {% for product in products %}
             <div class="col-4">

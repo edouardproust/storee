@@ -61,7 +61,7 @@ class SingleController extends AbstractController {
     public function faq($section): Response  
     {
         return $this->render('single/faq.html.twig', [
-            'section' => $section
+            '_fragment' => $section
         ]);
     }
 
@@ -82,7 +82,7 @@ class SingleController extends AbstractController {
     }
 
     /**
-     * @Route("/page-not-found", name="404")
+     * @Route("/not-found", name="404")
      */
     public function error404(): Response  
     {

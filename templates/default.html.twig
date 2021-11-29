@@ -1,0 +1,22 @@
+{% extends "base.html.twig" %}
+
+{% set title = (title|default(siteName)) %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+
+    {% block breadcrumbs %}{% endblock %}
+
+    {% if title is not same as siteName %}
+        <h1>{{ title }}</h1>
+    {% endif %}
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type }}">{{ message|raw }}</div>
+        {% endfor %}
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+{% endblock %}
