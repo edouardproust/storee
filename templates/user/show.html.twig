@@ -4,8 +4,52 @@
 {% set title = "Hello " ~ u.firstname ~ " " ~ u.lastname %}
 
 {% block content %}
+
     <h3>My orders</h3>
-    No orders yet.
+    {% if purchases | length <= 0 %}
+        No orders yet.
+    {% else %}
+        <table class="table">
+        <tr>
+            <th scope="col">Order Nr.</th>
+            <th scope="col">Date</th>
+            <th scope="col">Products</th>
+            <th scope="col">Total</th>
+            <th scope="col">Delivery Address</th>
+            <th scope="col">Payment Status</th>
+        </tr>
+        {% for purchase in purchases %}
+            <tr>
+                <td>{{ purchase.id }}</td>
+                <td>{{ purchase.createdAt | date("m/d/Y") }}</td>
+                <td>
+                    {% for item in purchase.purchaseItems %}
+                        <div>{{ item.quantity }}x {{ item.productName }} ({{ item.total / 100 }}€)</div>
+                    {% endfor %}
+                </td>
+                <td>{{ purchase.total / 100 }}€</td>
+                <td class="small">
+                    {% set delivery = helper.getUserData(purchase) %}
+                    <div>{{ delivery.firstname }} {{ delivery.lastname }}</div>
+                    <div>{{ delivery.street }}</div>
+                    <div>{{ delivery.postcode }} {{ delivery.city }}</div>
+                    <div>{{ delivery.country }}</div>
+                    <div><i class="me-2 fas fa-phone fa-sm"></i>{{ delivery.phone }}</div>
+                </td>
+                <td>{{ purchase.status|lower|capitalize }}
+                    {% if purchase.status is same as helper.getPaymentStatusConst.pending %}
+                        <div class="mt-2">
+                            <a href="#" class="btn btn-primary btn-sm">
+                                <i class="fas fa-credit-card me-1"></i> Pay now
+                            </a>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
     <h3>My informations</h3>
     {{ form_start(userForm) }}
     <div class="row">
@@ -29,4 +73,5 @@
     </div>
     <button type="submit" class="btn btn-primary text-left">Update my informations</button>
     {{ form_end(userForm) }}
+
 {% endblock %}

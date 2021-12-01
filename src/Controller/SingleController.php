@@ -94,9 +94,7 @@ class SingleController extends AbstractController {
      */
     public function test(ValidatorInterface $validator): Response  
     {
-        $age = 200;
-        $result = $validator->validate($age, new GreaterThan(300));
-        dd($result);
+        // Do testing here
         return $this->render('test.html.twig');
     }
 

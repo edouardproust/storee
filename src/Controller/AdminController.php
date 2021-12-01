@@ -21,6 +21,8 @@ class AdminController extends AbstractController
     }
 
     /**
+     * Show list of products
+     * 
      * @Route("/admin/products", name="admin_products")
      */
     public function products(ProductRepository $productRepo): Response
@@ -34,6 +36,8 @@ class AdminController extends AbstractController
     }
 
     /**
+     * Show list of categories
+     * 
      * @Route("/admin/categories", name="admin_categories")
      */
     public function categories(CategoryRepository $categoryRepo): Response
@@ -47,7 +51,9 @@ class AdminController extends AbstractController
         ]);
     }
 
-        /**
+    /**
+     * Show list of users
+     * 
      * @Route("/admin/users", name="admin_users")
      */
     public function users(UserRepository $usersRepo): Response
@@ -61,6 +67,8 @@ class AdminController extends AbstractController
     }
 
     /**
+     * Modify a user on the admin side (more options than for a user to modify his own account)
+     * 
      * @Route("/admin/user/{id}", name="admin_user")
      */
     public function user($id, UserRepository $userRepo): Response
@@ -71,7 +79,8 @@ class AdminController extends AbstractController
         }
         $form = $this->createForm(UserAdminType::class, [
             'email' => $user->getEmail(),
-            'fullname' => $user->getFullname(),
+            'firstname' => $user->getFirstname(),
+            'lastname' => $user->getLastname(),
             'created_at' => $user->getCreatedAt(),
             'is_admin' => in_array("ROLE_ADMIN", $user->getRoles()) ? true: false
         ]);

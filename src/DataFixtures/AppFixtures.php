@@ -2,40 +2,92 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Category;
-use App\Entity\Product;
 use App\Entity\User;
-use Doctrine\Bundle\FixturesBundle\Fixture;
+use App\Entity\Product;
+use App\Entity\Category;
+use App\Entity\Purchase;
+use App\Entity\PurchaseItem;
 use Doctrine\Persistence\ObjectManager;
-use PasswordHash;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture {
 
 
-    const MAX_CAT_NB = 8;
-    const MAX_PRODUCTS_NB = 100;
-    const MAX_USERS_NB = 10;
+    const CATEGORIES = 10;
+    const PRODUCTS = 27;
+    const USERS = 34;
+    const PURCHASES = 41;
+    const MAX_ROWS_PER_PURCHASE = 8;
+    const MAX_QTY_PER_ROW = 5;
 
     private $slugger;
     private $hasher;
+    private $faker;
+
+    /** @var User[] */
+    private $users;
+
+    /** @var Product[] */
+    private $products;
+
+    /** @var Category[] */
+    private $categories;
+
+    /** @var Purchase[] */
+    private $purchases;
+
+    /** @var PurchaseItem[] */
+    private $purchaseItems;
 
     public function __construct(SluggerInterface $slugger, UserPasswordHasherInterface $hasher)
     {
         $this->slugger = $slugger;
         $this->hasher = $hasher;
+        $this->faker = \Faker\Factory::create();
+
+        $this->users = [];
+        $this->products = [];
+        $this->categories = [];
+        $this->purchases = [];
+        $this->purchaseItems = [];
     }
 
     public function load(ObjectManager $manager): void
     {
-        $faker = \Faker\Factory::create();
-        $faker->addProvider(new \Bezhanov\Faker\Provider\Commerce($faker));
-        $faker->addProvider(new \Liior\Faker\Prices($faker));
-        $faker->addProvider(new \Bluemmb\Faker\PicsumPhotosProvider($faker));
+        $this->faker->addProvider(new \Bezhanov\Faker\Provider\Commerce($this->faker));
+        $this->faker->addProvider(new \Liior\Faker\Prices($this->faker));
+        $this->faker->addProvider(new \Bluemmb\Faker\PicsumPhotosProvider($this->faker));
 
-        // users
+        $this->createUsers();
+        $this->createCategories();
+        $this->createProducts();
+        $this->createPurchases();
+        $this->createPurchaseItems();
 
+        foreach($this->users as $user) {
+           $manager->persist($user); 
+        }
+        foreach($this->products as $product) {
+            $manager->persist($product);
+        }
+        foreach($this->categories as $category) {
+            $manager->persist($category);
+        }
+        foreach($this->purchases as $purchase) {
+            $manager->persist($purchase);
+        }
+        foreach($this->purchaseItems as $purchaseItem) {
+            $manager->persist($purchaseItem);
+        }
+
+        $manager->flush();
+    }
+    
+    private function createUsers(): void
+    {
+        // admin
         $admin = new User();
         $admin
             ->setEmail('sygnostudio@pm.me')
@@ -44,71 +96,125 @@ class AppFixtures extends Fixture {
             ->setPassword($this->hasher->hashPassword($admin, 'ev6]St64K6'))
             ->setRoles(['ROLE_ADMIN'])
             ->setCreatedAt(new \DateTime('yesterday'))
-            ->setStreet($faker->streetAddress())
-            ->setPostcode($faker->postcode())
-            ->setCity($faker->city())
+            ->setStreet($this->faker->streetAddress())
+            ->setPostcode($this->faker->postcode())
+            ->setCity($this->faker->city())
             ->setCountry("USA")
-            ->setPhone($faker->phoneNumber());
-        $manager->persist($admin);
+            ->setPhone($this->faker->phoneNumber());
+        $this->users[] = $admin;
 
-        for($u = 1; $u <= self::MAX_USERS_NB; $u++) {
+        // other users
+        for($u = 1; $u <= self::USERS; $u++) {
             $user = new User();
             $user
-                ->setFirstname($faker->firstName())
-                ->setLastname($faker->lastName())
-                ->setEmail(strtolower($user->getFirstname())."-".$user->getLastname()."@".$faker->freeEmailDomain())
-                ->setPassword($this->hasher->hashPassword($user, strtolower($this->slugger->slug($user->getFirstname()))))
+                ->setFirstname($this->faker->firstName())
+                ->setLastname($this->faker->lastName())
+                ->setEmail(strtolower($user->getFirstname()."-".$user->getLastname())."@".$this->faker->freeEmailDomain())
+                ->setPassword($this->hasher->hashPassword($user, strtolower($user->getFirstname())))
                 ->setCreatedAt(new \DateTime('today'))
-                ->setStreet($faker->streetAddress())
-                ->setPostcode($faker->postcode())
-                ->setCity($faker->city())
+                ->setStreet($this->faker->streetAddress())
+                ->setPostcode($this->faker->postcode())
+                ->setCity($this->faker->city())
                 ->setCountry("USA")
-                ->setPhone($faker->phoneNumber());
-            $manager->persist($user);
+                ->setPhone($this->faker->phoneNumber());
+            $this->users[] = $user;
         }
-    
-        // categories
-
-        $catUndefined = new Category;
-        $catUndefined->setName("Undefined")
+    }
+        
+    private function createCategories(): void
+    {
+        // Category "Undefined"
+        $undefined = new Category;
+        $undefined
+            ->setName("Undefined")
             ->setSlug("undefined");
-        $manager->persist($catUndefined);
+        $this->categories[] = $undefined;
 
-        $categoryIDs = [];
+        // Other categories
         $categoryNames = [];
-        for($c = 1; $c <= self::MAX_CAT_NB; $c++) {
-            $cat = new Category;
-            // check that each cat name is unique
-            $fakeCatName = $faker->category();
+        for($c = 1; $c <= self::CATEGORIES; $c++) {
+            $category = new Category;
+            // check that each category name is unique
+            $fakeCatName = $this->faker->category();
             while(in_array($fakeCatName, $categoryNames)) {
-                $fakeCatName = $faker->category();
+                $fakeCatName = $this->faker->category();
             }
             $categoryNames[] = $fakeCatName;
             // register category
-            $cat
+            $category
                 ->setName($fakeCatName)
-                ->setSlug(strtolower($this->slugger->slug($cat->getName())));
-            $manager->persist($cat);
-            $categoryIDs[] = $cat;
+                ->setSlug(strtolower($this->slugger->slug($category->getName())));
+            $this->categories[] = $category;
         }
+    }
 
-        // products
-
-        for($p = 1; $p <= self::MAX_PRODUCTS_NB; $p++) {
+    private function createProducts(): void
+    {
+        for($p = 1; $p <= self::PRODUCTS; $p++) {
             $product = new Product;
             $product
-                ->setName($faker->productName())
-                ->setPrice($faker->price())
+                ->setName($this->faker->productName())
+                ->setPrice($this->faker->price())
                 ->setSlug(strtolower($this->slugger->slug($product->getName())))
-                ->setShortDescription($faker->paragraph())
-                ->setMainImage($faker->imageUrl(600, 450, true))
-                ->setCreatedAt($faker->dateTimeBetween('-1 year', 'now'))
-                ->setCategory($faker->randomElement($categoryIDs));
-            $manager->persist($product);
+                ->setShortDescription($this->faker->paragraph())
+                ->setMainImage($this->faker->imageUrl(600, 450, true))
+                ->setCreatedAt($this->faker->dateTimeBetween('-1 year', 'now'))
+                ->setCategory($this->faker->randomElement($this->categories));
+            $this->products[] = $product;
         }
+    } 
 
-        // flush 
 
-        $manager->flush();
+    private function createPurchases(): void
+    {
+        for($p = 1; $p <= self::PURCHASES; $p++) {
+            $purchase = new Purchase;
+            $purchase
+                ->setUser($this->faker->randomElement($this->users))
+                ->setCreatedAt($this->faker->dateTimeBetween('-6 months'));
+                // ->setStatus(Purchase::STATUS_PENDING);
+                // ->setTotal(); -> set in createPurchaseItems()
+            
+                $user = $purchase->getUser();
+
+            $userData = [
+                "email" => $user->getEmail(),
+                "firstname" => $user->getFirstname(),
+                "lastname" => $user->getLastname(),
+                "street" => $user->getStreet(),
+                "postcode" => $user->getPostcode(),
+                "city" => $user->getCity(),
+                "country" => $user->getCountry(),
+                "phone" => $user->getPhone(),
+                "created_at" => $user->getCreatedAt()
+            ];
+            $purchase->setUserData(json_encode($userData));
+            $this->purchases[] = $purchase;
+        }
     }
+
+    private function createPurchaseItems(): void
+    {
+        foreach($this->purchases as $purchase) {
+            $purchaseItems = mt_rand(1, self::MAX_ROWS_PER_PURCHASE);
+
+            $purchaseTotal = 0;
+            
+            for($pi = 1; $pi <= $purchaseItems; $pi++) {
+                $purchaseItem = new PurchaseItem;
+                $purchaseItem
+                    ->setPurchase($purchase)
+                    ->setProduct($this->faker->randomElement($this->products))
+                    ->setQuantity(mt_rand(1, self::MAX_QTY_PER_ROW))
+                    ->setTotal($purchaseItem->getProduct()->getPrice() * $purchaseItem->getQuantity())
+                    ->setProductName($purchaseItem->getProduct()->getName())
+                    ->setProductPrice($purchaseItem->getProduct()->getPrice());
+                $this->purchaseItems[] = $purchaseItem;
+
+                $purchaseTotal += $purchaseItem->getTotal();
+            }
+            $purchase->setTotal($purchaseTotal);
+        }
+    }
+
 }

@@ -2,12 +2,10 @@
 
 namespace App\Security;
 
-use App\Repository\UserRepository;
-use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -22,14 +20,20 @@ use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface
 class LoginFormAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     private const LOGIN_ROUTE = 'security_login';
-    private const SUCCESS_REDIRECT_ROUTE = 'admin';
-    private $userRepo;
-    private $urlGenerator;
+    private const SUCCESS_REDIRECT_ROUTE = 'user_show';
+    private const SUCCESS_REDIRECT_ROUTE_ADMIN = 'admin';
 
-    public function __construct(UserRepository $userRepo, UrlGeneratorInterface $urlGenerator)
+    private $urlGenerator;
+    private $flashBag;
+    private $successRedirectUrl;
+    private $successRedirectUrlAdmin;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator, FlashBagInterface $flashBag)
     {
-        $this->userRepo = $userRepo;
         $this->urlGenerator = $urlGenerator;
+        $this->flashBag = $flashBag;
+        $this->successRedirectUrl = $urlGenerator->generate(self::SUCCESS_REDIRECT_ROUTE);
+        $this->successRedirectUrlAdmin = $urlGenerator->generate(self::SUCCESS_REDIRECT_ROUTE_ADMIN);
     }
 
     public function supports(Request $request): ?bool
@@ -53,7 +57,19 @@ class LoginFormAuthenticator extends AbstractAuthenticator implements Authentica
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        return new RedirectResponse(self::SUCCESS_REDIRECT_ROUTE);
+        if($sessionReferer = $request->getSession()->get('referer')) {
+            $redirect = $sessionReferer;
+        } elseif($queryReferer = $request->query->get('referer')) {
+            $redirect = $queryReferer;
+        } else {
+            if(in_array("ROLE_ADMIN", $token->getUser()->getRoles())) {
+                $redirect = $this->successRedirectUrlAdmin;
+            } else {
+                $redirect = $this->successRedirectUrl;
+            }
+        }
+        // $this->flashBag->add('success', 'You are now connected');
+        return new RedirectResponse($redirect);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
@@ -64,6 +80,7 @@ class LoginFormAuthenticator extends AbstractAuthenticator implements Authentica
 
     public function start(Request $request, AuthenticationException $authException = null): Response
     {
+        $request->getSession()->set('referer', $request->headers->get('referer'));
         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $authException);
         return new RedirectResponse($this->urlGenerator->generate(self::LOGIN_ROUTE));
     }

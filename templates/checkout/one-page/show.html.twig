@@ -12,5 +12,108 @@
 {% endblock %}
 
 {% block content %}
-    Checkout form
+    {% set u = formCheckout.userData %}
+    {% set d = formCheckout.delivery %}
+    {% set deliveryFee = 0 %}
+    {% set totalWithDelivery = total + deliveryFee %}
+
+    <div class="row">
+        <div class="col-md-7 pe-md-5">
+            {% if not app.user %}
+                <a href="{{ path("security_login") }}" class="w-100 btn btn-primary">Login in</a>
+                <div class="my-3 text-center"><i class="fas fa-arrow-down" style="opacity:0.6"></i>
+                <span> Or enter your informations manually </span>
+                <i class="fas fa-arrow-down" style="opacity:0.6"></i></div>
+            {% endif %}
+            {{ form_start(formCheckout) }}
+            <h3 class="mt-0">Personal Informations</h3>
+            <div class="row">
+                <div class="col-sm-6">
+                    {{ form_row(u.firstname) }}
+                </div>
+                <div class="col-sm-6">
+                    {{ form_row(u.lastname) }}
+                </div>
+            </div>
+            {{ form_row(u.email) }}
+            {{ form_row(u.street) }}
+            <div class="row">
+                <div class="col-sm-3">
+                    {{ form_row(u.postcode) }}
+                </div>
+                <div class="col-sm-5">
+                    {{ form_row(u.city) }}
+                </div>
+                <div class="col-sm-4">
+                    {{ form_row(u.country) }}
+                </div>
+            </div>
+            {{ form_row(u.phone) }}
+            {{ form_row(u.password) }}
+        </div>
+        <div class="col-md-5">
+            <h3 class="mt-0">Delivery Method</h3>
+            {{ form_row(d.method) }}
+
+            <h3>Payment</h3>
+            <div class="d-flex align-items-center">
+                <span class="me-1">Pay with</span> 
+                <i class="fab fa-stripe fa-2x"></i>
+            </div>
+            <div class="small">
+                <i class="fas fa-lock me-1"></i>
+                <a href="https://stripe.com/docs/security/stripe" target="_blank">Garanteed Safe Checkout</a>
+                <span class="text-muted"> with 256 Bit SSL Encryption</span>
+            </div>
+            <div class="row my-2">
+                <div class="col-sm-6"><input placeholder="Card number" type="text" class="form-control"></div>
+                <div class="col-sm-3"><input placeholder="Year Exp." type="text" class="form-control"></div>
+                <div class="col-sm-3"><input placeholder="Crypto" type="text" class="form-control"></div>
+            </div>
+            {# <div style="opacity:0.5">
+                <i class="fab fa-cc-visa fa-2x"></i>
+                <i class="fab fa-cc-mastercard fa-2x"></i>
+                <i class="fab fa-cc-amex fa-2x"></i>
+                <i class="fab fa-cc-discover fa-2x"></i>
+            </div> #}
+            <div class="mt-4">
+                <div class="small text-muted">Products: {{ total|price }}</div>
+                <div class="small text-muted">Delivery: {{ deliveryFee|price }}</div>
+                <b>Total:</b> {{ totalWithDelivery|price }}
+            </div>
+            <button type="submit" class="w-100 my-3 btn btn-primary btn-lg">
+                <i class="fas fa-check me-2"></i>Pay now
+            </button>
+            <img class="img-fluid" src="img/checkout/guaranties.jpg" alt="">
+        </div>
+    </div>
+    
+    {{ form_end(formCheckout) }}
+
+    <hr class="my-5">
+
+    <h3>Order details</h3>
+    <table class="table">
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Total</th>
+        </tr>
+        {% for item in cart %}
+            <tr>
+                <td>{{item.product.name}}</td>
+                <td><span class="mx-2">{{item.qty}}</span></td>
+                <td>{{ item.total|price }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            {% set deliveryFee = 0 %}
+            <th colspan=2>Delivery</th>
+            <th>{{ deliveryFee|price }}</th>
+        </tr>
+        <tr>
+            <th colspan=2>Total</th>
+            <th>{{ total|price }}</th>
+        </tr>
+    </table>
 {% endblock %}

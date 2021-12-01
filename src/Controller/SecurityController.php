@@ -27,8 +27,17 @@ class SecurityController extends AbstractController
     /**
      * @Route("/logout", name="security_logout")
      */
-    public function logout(): ?Response
+    public function logout(Request $request): ?Response
     {
         return null;
     }
+
+    /**
+     * @Route("/login/logged-out", name="security_logout_handler")
+     */
+    public function logoutHandler(Request $request, AuthenticationUtils $utils): Response
+    {
+        $this->addFlash('success', 'Your are now logged out.');
+        return $this->redirectToRoute('security_login');
+    }  
 }
