@@ -20,9 +20,14 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            entry_point: App\Security\LoginFormAuthenticator
-            # access_denied_handler: App\Security\AccessDeniedHandler
+            entry_point: App\Security\AuthenticationEntryPoint
+            access_denied_handler: App\Security\AccessDeniedHandler
             custom_authenticator: App\Security\LoginFormAuthenticator
+            # form_login:
+            #     login_path: security_login
+            #     check_path: security_login
+            #     username_parameter: login[email]
+            #     password_parameter: login[password]
             logout:
                 path: security_logout
                 target: 'security_logout_handler'

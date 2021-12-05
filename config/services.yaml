@@ -28,3 +28,7 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\App\Service\StripeService:
+        arguments:
+            $secretKey: sk_test_26PHem9AhJZvU623DfE1x4sd

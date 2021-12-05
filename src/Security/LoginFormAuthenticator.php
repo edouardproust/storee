@@ -57,11 +57,17 @@ class LoginFormAuthenticator extends AbstractAuthenticator implements Authentica
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        // Check if a referer (previous page) has been previously saved
+        // a. in session
         if($sessionReferer = $request->getSession()->get('referer')) {
             $redirect = $sessionReferer;
+            $request->getSession()->remove('referer');
+        // b. in url (query)
         } elseif($queryReferer = $request->query->get('referer')) {
             $redirect = $queryReferer;
+        // c. no referer
         } else {
+            // set a custom redirection wether user is admin or not
             if(in_array("ROLE_ADMIN", $token->getUser()->getRoles())) {
                 $redirect = $this->successRedirectUrlAdmin;
             } else {

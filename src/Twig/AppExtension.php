@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use App\App\UrlHelper;
+use App\App\Helper\UrlHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -32,6 +32,13 @@ class AppExtension extends AbstractExtension
         return $withCurrency;
     }
 
+    /**
+     * Warning: slows down the site a lot if used several times on the same page (ie. for a product collection)
+     * @param string $fileUrl 
+     * @param string $fileType 
+     * @param null|string $defaultFile 
+     * @return null|string 
+     */
     public function replaceFileIfNotFound(string $fileUrl, string $fileType = 'image', ?string $defaultFile = null): ?string
     {
         if(UrlHelper::isReturningError($fileUrl)) {

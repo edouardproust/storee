@@ -2,7 +2,7 @@
 
 namespace App\Controller\Cart;
 
-use App\App\Cart\CartService;
+use App\App\Service\CartService;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

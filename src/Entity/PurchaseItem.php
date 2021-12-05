@@ -39,14 +39,9 @@ class PurchaseItem
     private $total;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
      */
-    private $productName;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $productPrice;
+    private $productData;
 
     public function getId(): ?int
     {
@@ -101,26 +96,14 @@ class PurchaseItem
         return $this;
     }
 
-    public function getProductName(): ?string
+    public function getProductData(): ?string
     {
-        return $this->productName;
+        return $this->productData;
     }
 
-    public function setProductName(string $productName): self
+    public function setProductData(string $productData): self
     {
-        $this->productName = $productName;
-
-        return $this;
-    }
-
-    public function getProductPrice(): ?int
-    {
-        return $this->productPrice;
-    }
-
-    public function setProductPrice(int $productPrice): self
-    {
-        $this->productPrice = $productPrice;
+        $this->productData = $productData;
 
         return $this;
     }

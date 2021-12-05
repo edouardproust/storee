@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\DeliveryMethodRepository;
+use App\Twig\AppExtension;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -32,6 +35,16 @@ class DeliveryMethod
      */
     private $price;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=DeliveryCountry::class, inversedBy="deliveryMethods")
+     */
+    private $countries;
+
+    public function __construct()
+    {
+        $this->countries = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -42,7 +55,13 @@ class DeliveryMethod
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function getNameWithPrice(): ?string
+    {
+        $price = (new AppExtension)->formatPrice($this->price);
+        return $this->name . ' ('. $price . ')';
+    }
+
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -72,4 +91,42 @@ class DeliveryMethod
 
         return $this;
     }
+
+    /**
+     * @return Collection|DeliveryCountry[]
+     */
+    public function getCountries(): Collection
+    {
+        return $this->countries;
+    }
+
+    /**
+     * @param DeliveryCountry[] $deliveryCountries
+     * @return DeliveryMethod 
+     */
+    public function setCountries(array $deliveryCountries): self
+    {
+        foreach($deliveryCountries as $country) {
+            $this->countries[] = $country;
+        }
+
+        return $this;
+    }
+
+    public function addCountry(DeliveryCountry $country): self
+    {
+        if (!$this->countries->contains($country)) {
+            $this->countries[] = $country;
+        }
+
+        return $this;
+    }
+
+    public function removeCountry(DeliveryCountry $country): self
+    {
+        $this->countries->removeElement($country);
+
+        return $this;
+    }
+
 }

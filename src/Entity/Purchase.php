@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\App\Helper\DeliveryHelper;
 use App\Repository\PurchaseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -53,10 +54,33 @@ class Purchase
      */
     private $status = self::STATUS_PENDING;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=DeliveryMethod::class)
+     */
+    private $delivery;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=PaymentMethod::class, inversedBy="purchases")
+     */
+    private $paymentMethod;
+
     public function __construct()
     {
         $this->purchaseItems = new ArrayCollection();
     }
+
+    // public function __get($property)
+    // {
+    //     $getter = fnHelper::generateGetter($property);
+    //     if(null !== $this->getUser()) {
+    //         if(method_exists(User::class, $getter)) {
+    //             return $this->getUser()->$getter();
+    //         } elseif(method_exists(DeliveryMethod::class, $getter)) {
+    //             return $this->getDelivery()->$getter();
+    //         }
+    //     }
+    //     return null;
+    // }
 
     public function getId(): ?int
     {
@@ -149,6 +173,30 @@ class Purchase
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getDelivery(): ?DeliveryMethod
+    {
+        return $this->delivery;
+    }
+
+    public function setDelivery(?DeliveryMethod $delivery): self
+    {
+        $this->delivery = $delivery;
+
+        return $this;
+    }
+
+    public function getPaymentMethod(): ?PaymentMethod
+    {
+        return $this->paymentMethod;
+    }
+
+    public function setPaymentMethod(?PaymentMethod $paymentMethod): self
+    {
+        $this->paymentMethod = $paymentMethod;
 
         return $this;
     }

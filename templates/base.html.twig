@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}{% endblock %} - {{ siteName }}</title>
+        <link rel="icon" href="img/favicon.png">
         {# Run `composer require symfony/webpack-encore-bundle`
            and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}
@@ -16,7 +17,6 @@
         {% endblock %}
     </head>
     <body>
-
         {% include "_parts/_navbar.html.twig" %}
 
         <div class="container my-5">
@@ -24,6 +24,6 @@
         </div>
 
         {% include "_parts/_footer.html.twig"%}
-{{dump(app.session)}}
     </body>
+    
 </html>

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\App\Cart;
+namespace App\App\Service;
 
-use App\Controller\Cart\CartAbstractController;
+use App\App\Entity\CartItem;
 use App\Repository\ProductRepository;
+use App\Controller\Cart\CartAbstractController;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CartService extends CartAbstractController

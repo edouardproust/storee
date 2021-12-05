@@ -1,0 +1,9 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Access denied" %}
+
+{% block content %}
+    <p>You must be conected as an administrator to access this page.</p>
+    <a href="{{path("home")}}" class="btn btn-outline-primary">Go to homepage</a>
+    or <a href="{{ path('security_login') }}">connect as an administrator</a>
+{% endblock %}

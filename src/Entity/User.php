@@ -14,6 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -29,7 +30,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+    private $roles = ["ROLE_USER"];
     
     /**
      * @var string The hashed password
@@ -130,8 +131,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        if(!in_array('ROLE_USER', $roles)) {
+            $roles[] = 'ROLE_USER';
+        }
 
         return array_unique($roles);
     }
@@ -141,6 +143,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function addRole(string $role): void
+    {
+        $roles = $this->getRoles();
+        if(!in_array($role, $roles)) {
+            $roles[] = $role;
+        }
+        $this->setRoles($roles);
+    }
+
+    public function removeRole(string $role): void
+    {
+        $roles = $this->getRoles();
+        $key = array_search($role, $roles);
+        if($key) {
+            unset($roles[$key]);
+        }
+        $this->setRoles($roles);
     }
 
     /**

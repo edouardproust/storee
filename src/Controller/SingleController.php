@@ -90,6 +90,14 @@ class SingleController extends AbstractController {
     }
 
     /**
+     * @Route("/access-denied", name="access_denied")
+     */
+    public function accessDenied(): Response  
+    {
+        return $this->render('single/access-denied.html.twig');
+    }
+
+    /**
      * @Route("/test", name="test")
      */
     public function test(ValidatorInterface $validator): Response  

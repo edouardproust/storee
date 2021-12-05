@@ -2,16 +2,17 @@
 
 namespace App\Controller;
 
-use App\App\Account\AccountHelper;
 use App\Form\UserType;
-use App\Repository\PurchaseRepository;
 use App\Repository\UserRepository;
+use App\App\Service\AccountService;
+use App\App\Service\CheckoutService;
+use App\Repository\PurchaseRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
@@ -23,12 +24,13 @@ class UserController extends AbstractController
         EntityManagerInterface $em, 
         UserPasswordHasherInterface $hasher, 
         PurchaseRepository $purchaseRepository,
-        AccountHelper $helper
+        AccountService $accountService,
+        CheckoutService $checkoutService
     ): Response
     {
         // Orders list
         $user = $this->getUser();
-        $purchases = $purchaseRepository->findBy(["user" => $user]);
+        $purchases = $purchaseRepository->findBy(["user" => $user], ['createdAt' => 'DESC']);
 
         // Account infos
         $form = $this->createForm(UserType::class, $user);
@@ -48,8 +50,9 @@ class UserController extends AbstractController
         // View
         return $this->render('user/show.html.twig', [
             'purchases' => $purchases,
-            'helper' => $helper,
-            'userForm' => $form->createView()
+            'userForm' => $form->createView(),
+            'accountService' => $accountService,
+            'checkoutService' => $checkoutService
         ]);
     }
 

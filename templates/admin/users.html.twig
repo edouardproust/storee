@@ -21,7 +21,7 @@
         </tr>
         {% for user in users %}
         <tr>
-            <td>{{user.fullname}}</td>
+            <td>{{user.firstname}} {{user.lastname}}</td>
             <td>{{ user.createdAt|date("m/d/Y") }}</td>
             <td>
                 {% for role in user.roles %}

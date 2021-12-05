@@ -6,13 +6,13 @@
 
 {% block body %}
 
-    {% block breadcrumbs %}{% endblock %}
-
     {% for type, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert alert-{{ type }}">{{ message|raw }}</div>
         {% endfor %}
     {% endfor %}
+
+    {% block breadcrumbs %}{% endblock %}
 
     {% block content %}{% endblock %}
 {% endblock %}

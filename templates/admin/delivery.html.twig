@@ -1,0 +1,44 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Delivery Options" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Products"}
+        }
+    }%}
+{% endblock %}
+
+{% block content %}
+    <h3>Methods</h3>
+    <table class="table align-middle">
+        <tr>
+            <th>Name</th>
+        </tr>
+        {% for dm in deliveryMethods %}
+        <tr>
+            <td>
+                <a href="#">
+                    {{dm.name ? '-' }}
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Countries</h3>
+    <table class="table align-middle">
+        <tr>
+            <th>Country</th>
+        </tr>
+        {% for country in countries %}
+        <tr>
+            <td>
+                <a href="#">
+                    {{country.name ? '-' }}
+                </a>
+            </td>
+        </tr>
+{% endblock %}

@@ -2,18 +2,30 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\User;
-use App\Entity\Product;
-use App\Entity\Category;
-use App\Entity\Purchase;
-use App\Entity\PurchaseItem;
-use Doctrine\Persistence\ObjectManager;
-use Doctrine\Bundle\FixturesBundle\Fixture;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\App\Helper\DeliveryHelper;
+use App\Entity\{
+    User,
+    Product,
+    Category,
+    DeliveryCountry,
+    Purchase,
+    PurchaseItem,
+    DeliveryMethod,
+    PaymentMethod
+};
+use Doctrine\{
+    Persistence\ObjectManager,
+    Bundle\FixturesBundle\Fixture
+};
+use Symfony\Component\{
+    String\Slugger\SluggerInterface,
+    PasswordHasher\Hasher\UserPasswordHasherInterface
+};
 
 class AppFixtures extends Fixture {
 
+    const ADMIN_USERNAME = "admin";
+    const ADMIN_PASSWORD = "admin";
 
     const CATEGORIES = 10;
     const PRODUCTS = 27;
@@ -21,51 +33,66 @@ class AppFixtures extends Fixture {
     const PURCHASES = 41;
     const MAX_ROWS_PER_PURCHASE = 8;
     const MAX_QTY_PER_ROW = 5;
+    const DELIVERY_METHODS = [
+        'USPS' => ['Normal - 72h', 490, ['US' => "United States"]], 
+        'FedEx' => ['Quick - 48h', 1390], 
+        'UPS' => ['Express - 24h', 2690]
+    ];
+    const PAYMENT_METHODS = ["Stripe"];
 
     private $slugger;
     private $hasher;
     private $faker;
 
     /** @var User[] */
-    private $users;
+    private $users = [];
 
     /** @var Product[] */
-    private $products;
+    private $products = [];
 
     /** @var Category[] */
-    private $categories;
+    private $categories = [];
 
     /** @var Purchase[] */
-    private $purchases;
+    private $purchases = [];
 
     /** @var PurchaseItem[] */
-    private $purchaseItems;
+    private $purchaseItems = [];
+
+    /** @var DeliveryCountry */
+    private $deliveryCountries = [];
+
+    /** @var DeliveryMethod[] */
+    private $deliveryMethods;
+
+    /** @var PaymentMethod */
+    private $paymentMethods = [];
 
     public function __construct(SluggerInterface $slugger, UserPasswordHasherInterface $hasher)
     {
         $this->slugger = $slugger;
         $this->hasher = $hasher;
         $this->faker = \Faker\Factory::create();
-
-        $this->users = [];
-        $this->products = [];
-        $this->categories = [];
-        $this->purchases = [];
-        $this->purchaseItems = [];
     }
 
     public function load(ObjectManager $manager): void
     {
+        // load faker providers
         $this->faker->addProvider(new \Bezhanov\Faker\Provider\Commerce($this->faker));
         $this->faker->addProvider(new \Liior\Faker\Prices($this->faker));
         $this->faker->addProvider(new \Bluemmb\Faker\PicsumPhotosProvider($this->faker));
 
+        // create entities
         $this->createUsers();
         $this->createCategories();
         $this->createProducts();
         $this->createPurchases();
         $this->createPurchaseItems();
-
+        $this->createDeliveryCountries();
+        $this->createDeliveryMethods();
+        $this->createPaymentMethods();
+        
+        // save entities in an array
         foreach($this->users as $user) {
            $manager->persist($user); 
         }
@@ -81,6 +108,15 @@ class AppFixtures extends Fixture {
         foreach($this->purchaseItems as $purchaseItem) {
             $manager->persist($purchaseItem);
         }
+        foreach($this->deliveryCountries as $deliveryCountry) {
+            $manager->persist($deliveryCountry);
+        }
+        foreach($this->deliveryMethods as $deliveryMethod) {
+            $manager->persist($deliveryMethod);
+        }
+        foreach($this->paymentMethods as $paymentMethod) {
+            $manager->persist($paymentMethod);
+        }
 
         $manager->flush();
     }
@@ -90,10 +126,10 @@ class AppFixtures extends Fixture {
         // admin
         $admin = new User();
         $admin
-            ->setEmail('sygnostudio@pm.me')
+            ->setEmail(self::ADMIN_USERNAME)
             ->setFirstname('Sygno')
             ->setLastname('Studio')
-            ->setPassword($this->hasher->hashPassword($admin, 'ev6]St64K6'))
+            ->setPassword($this->hasher->hashPassword($admin, self::ADMIN_PASSWORD))
             ->setRoles(['ROLE_ADMIN'])
             ->setCreatedAt(new \DateTime('yesterday'))
             ->setStreet($this->faker->streetAddress())
@@ -174,21 +210,7 @@ class AppFixtures extends Fixture {
                 ->setCreatedAt($this->faker->dateTimeBetween('-6 months'));
                 // ->setStatus(Purchase::STATUS_PENDING);
                 // ->setTotal(); -> set in createPurchaseItems()
-            
-                $user = $purchase->getUser();
-
-            $userData = [
-                "email" => $user->getEmail(),
-                "firstname" => $user->getFirstname(),
-                "lastname" => $user->getLastname(),
-                "street" => $user->getStreet(),
-                "postcode" => $user->getPostcode(),
-                "city" => $user->getCity(),
-                "country" => $user->getCountry(),
-                "phone" => $user->getPhone(),
-                "created_at" => $user->getCreatedAt()
-            ];
-            $purchase->setUserData(json_encode($userData));
+            $purchase->setUserData(serialize($purchase->getUser()));
             $this->purchases[] = $purchase;
         }
     }
@@ -206,14 +228,47 @@ class AppFixtures extends Fixture {
                     ->setPurchase($purchase)
                     ->setProduct($this->faker->randomElement($this->products))
                     ->setQuantity(mt_rand(1, self::MAX_QTY_PER_ROW))
-                    ->setTotal($purchaseItem->getProduct()->getPrice() * $purchaseItem->getQuantity())
-                    ->setProductName($purchaseItem->getProduct()->getName())
-                    ->setProductPrice($purchaseItem->getProduct()->getPrice());
+                    ->setTotal($purchaseItem->getProduct()->getPrice() * $purchaseItem->getQuantity());
+                $purchaseItem
+                    ->setProductData(serialize($purchaseItem->getProduct()));
                 $this->purchaseItems[] = $purchaseItem;
 
                 $purchaseTotal += $purchaseItem->getTotal();
             }
             $purchase->setTotal($purchaseTotal);
+        }
+    }
+
+    private function createDeliveryCountries(): void
+    {
+        foreach(DeliveryHelper::deliveryCountries() as $code => $name) {
+            $country = (new DeliveryCountry)
+                ->setCode($code)
+                ->setName($name);
+            $this->deliveryCountries[] = $country;
+        }
+    }
+
+    private function createDeliveryMethods(): void
+    {
+        foreach(self::DELIVERY_METHODS as $carrier => $infos) {
+            $method = (new DeliveryMethod)
+                ->setName($infos[0])
+                ->setCarrier($carrier)
+                ->setPrice($infos[1]);
+                foreach($this->deliveryCountries as $country) {
+                    $method->addCountry($country);
+                }
+            $this->deliveryMethods[] = $method;
+        }
+    }
+
+    private function createPaymentMethods(): void
+    {
+        foreach(self::PAYMENT_METHODS as $methodName) {
+            $method = (new PaymentMethod)
+                ->setName($methodName);
+            $this->paymentMethods[] = $method;
         }
     }
 

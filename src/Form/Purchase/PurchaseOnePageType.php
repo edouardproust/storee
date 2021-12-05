@@ -2,6 +2,8 @@
 
 namespace App\Form\Purchase;
 
+use App\Entity\Purchase;
+use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -11,15 +13,8 @@ class PurchaseOnePageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('userData', PurchaseUserDataType::class, [
-                'label' => false,
-                'required' => false
-            ])
-            ->add('delivery', PurchaseDeliveryType::class, [
-                'label' => false,
-                'required' => false
-            ])
-        ;
+            ->add('userData', PurchaseUserDataType::class)
+            ->add('delivery', PurchaseDeliveryType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

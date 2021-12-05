@@ -15,7 +15,8 @@
             <th scope="col">Date</th>
             <th scope="col">Products</th>
             <th scope="col">Total</th>
-            <th scope="col">Delivery Address</th>
+            <th scope="col">Delivery</th>
+            <th scope="col">Address</th>
             <th scope="col">Payment Status</th>
         </tr>
         {% for purchase in purchases %}
@@ -24,20 +25,22 @@
                 <td>{{ purchase.createdAt | date("m/d/Y") }}</td>
                 <td>
                     {% for item in purchase.purchaseItems %}
-                        <div>{{ item.quantity }}x {{ item.productName }} ({{ item.total / 100 }}€)</div>
+                        {% set data = accountService.getProductData(item) %}
+                        <div>{{ item.quantity }}x {{ data.name }} ({{ item.total|price }})</div>
                     {% endfor %}
                 </td>
-                <td>{{ purchase.total / 100 }}€</td>
+                <td>{{ purchase.total|price }}</td>
+                <td>{{ purchase.delivery.name }}</td>
                 <td class="small">
-                    {% set delivery = helper.getUserData(purchase) %}
-                    <div>{{ delivery.firstname }} {{ delivery.lastname }}</div>
-                    <div>{{ delivery.street }}</div>
-                    <div>{{ delivery.postcode }} {{ delivery.city }}</div>
-                    <div>{{ delivery.country }}</div>
-                    <div><i class="me-2 fas fa-phone fa-sm"></i>{{ delivery.phone }}</div>
+                    {% set data = accountService.getUserData(purchase) %}
+                    <div>{{ data.firstname }} {{ data.lastname }}</div>
+                    <div>{{ data.street }}</div>
+                    <div>{{ data.postcode }} {{ data.city }}</div>
+                    <div>{{ data.country }}</div>
+                    <div><i class="me-2 fas fa-phone fa-sm"></i>{{ data.phone }}</div>
                 </td>
                 <td>{{ purchase.status|lower|capitalize }}
-                    {% if purchase.status is same as helper.getPaymentStatusConst.pending %}
+                    {% if purchase.status is same as checkoutService.getPaymentStatusConst('pending') %}
                         <div class="mt-2">
                             <a href="#" class="btn btn-primary btn-sm">
                                 <i class="fas fa-credit-card me-1"></i> Pay now

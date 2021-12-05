@@ -1,24 +1,23 @@
 {% extends 'default.html.twig' %}
 
-{% set title = "Users" %}
+{% set title = user.firstname ~ " " ~ user.lastname %}
 
 {% block breadcrumbs %}
     {% include "_parts/_breadcrumb.html.twig" with {
         links:{ 
             0:{name:"Admin", url:path("admin")},
             1:{name:"Users", url:path("admin_users")},
-            2:{name:user.username}
+            2:{name:user.firstname ~ " " ~ user.lastname}
         }
     }%}
 {% endblock %}
 
 {% block content %}
-    <b>User ID:</b> {{ user.id }}</li>
-    <div class="row mt-4">
+    <div class="small">User ID: {{ user.id }}</div>
+    <div class="row mt-3">
         <div class="col col-4">
             {{ form_start(userForm) }}
             {{ form_widget(userForm) }}
-            
             <button type="submit" class="btn btn-primary">Edit</button>
             {{ form_end(userForm) }}
         </div>
