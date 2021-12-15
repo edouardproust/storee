@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\App\Helper\DeliveryHelper;
+use Faker\Factory;
 use App\Entity\{
     User,
     Product,
@@ -71,7 +72,7 @@ class AppFixtures extends Fixture {
     public function __construct(UserPasswordHasherInterface $hasher)
     {
         $this->hasher = $hasher;
-        $this->faker = \Faker\Factory::create();
+        $this->faker = Factory::create();
     }
 
     public function load(ObjectManager $manager): void
