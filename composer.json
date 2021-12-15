@@ -33,7 +33,11 @@
         "symfony/web-profiler-bundle": "5.3.*",
         "symfony/yaml": "5.3.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "bluemmb/faker-picsum-photos-provider": "^2.0",
+        "fakerphp/faker": "^1.16",
+        "liorchamla/faker-prices": "^2.0",
+        "mbezhanov/faker-provider-collection": "^2.0"
     },
     "config": {
         "optimize-autoloader": true,
@@ -85,10 +89,6 @@
         }
     },
     "require-dev": {
-        "bluemmb/faker-picsum-photos-provider": "^2.0",
-        "fakerphp/faker": "^1.16",
-        "liorchamla/faker-prices": "^2.0",
-        "mbezhanov/faker-provider-collection": "^2.0",
         "symfony/stopwatch": "5.3.*"
     }
 }
