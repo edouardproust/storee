@@ -67,7 +67,7 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "database-setup": [
-            "php bin/console doctrine:migration:migrate --no-interaction",
+            "php bin/console doctrine:migrations:migrate --no-interaction",
             "php bin/console doctrine:fixtures:load --no-interaction"
         ],
         "post-install-cmd": [
