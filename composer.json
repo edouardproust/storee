@@ -31,7 +31,8 @@
         "symfony/yaml": "5.3.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "symfony/web-profiler-bundle": "5.3.*"
+        "symfony/web-profiler-bundle": "5.3.*",
+        "symfony/debug-bundle": "5.3.*"
     },
     "config": {
         "optimize-autoloader": true,
@@ -81,7 +82,6 @@
         "fakerphp/faker": "^1.16",
         "liorchamla/faker-prices": "^2.0",
         "mbezhanov/faker-provider-collection": "^2.0",
-        "symfony/debug-bundle": "5.3.*",
         "symfony/stopwatch": "5.3.*"
     }
 }
