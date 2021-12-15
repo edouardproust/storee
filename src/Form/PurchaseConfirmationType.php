@@ -1,26 +1,29 @@
 <?php
 
-namespace App\Form\Purchase;
+namespace App\Form;
 
-use App\Entity\User;
+use App\Entity\Purchase;
+use App\Entity\PaymentMethod;
+use App\Entity\DeliveryMethod;
+use App\Form\Type\CountryType;
 use App\Entity\DeliveryCountry;
 use Symfony\Component\Form\AbstractType;
-use App\Repository\DeliveryCountryRepository;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Form\DataTransformer\CountryToStringTransformer;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\ChoiceList\Loader\CallbackChoiceLoader;
 
-class PurchaseUserDataType extends AbstractType
+class PurchaseConfirmationType extends AbstractType
 {
 
-    public function __construct(DeliveryCountryRepository $countryRepository)
+    private $transformer;
+
+    public function __construct(CountryToStringTransformer $transformer)
     {
-        $this->countryRepository = $countryRepository;
+        $this->transformer = $transformer;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -59,13 +62,6 @@ class PurchaseUserDataType extends AbstractType
                 'placeholder' => false,
                 'row_attr' => ['class' => 'form-floating mb-3']
             ])
-            // ->add('country', ChoiceType::class, [
-            //     'choice_loader' => new CallbackChoiceLoader(function() {
-            //         return $this->countryRepository->findAll();
-            //     }),
-            //     'choice_label' => 'name',
-            //     'label' => false
-            // ])
             ->add('email', TextType::class, [
                 'attr' => ['placeholder' => 'Email'],
                 'row_attr' => ['class' => 'form-floating mb-3'],
@@ -83,13 +79,31 @@ class PurchaseUserDataType extends AbstractType
                 'row_attr' => ['class' => 'form-floating mb-3'],
                 'help' => "Enter a password to create an account (to track your orders and deliveries easily).",
             ])
-        ;
+            ->add('deliveryMethod', EntityType::class, [
+                'class' => DeliveryMethod::class,
+                'label' => 'Choose a method',
+                'choice_label' => 'name_with_price',
+                'placeholder' => false,
+                'row_attr' => ['class' => 'form-floating mb-3']
+            ])
+            ->add('paymentMethod', EntityType::class, [
+                'label' => 'Choose a service',
+                'class' => PaymentMethod::class,
+                'choice_label' => 'name',
+                'placeholder' => false,
+                'row_attr' => ['class' => 'form-floating mb-3']
+            ]);
+        
+        $builder->get('country')
+            ->addModelTransformer($this->transformer);
+
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'inherit_data' => true
+            'data_class' => Purchase::class
+            //'inherit_data' => true
         ]);
     }
 }

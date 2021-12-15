@@ -21,55 +21,58 @@
                     All your informations are safe and kept private (<a href="{{ path('privacy') }}" target="_blank">Privacy policy</a>).
                 </div>
 
-                {% set u = formCheckout.userData %}
                 <div class="row">
                     <div class="col-sm-6 ">
-                        {{ form_row(u.firstname) }}
+                        {{ form_row(formCheckout.firstname) }}
                     </div>
                     <div class="col-sm-6">
-                        {{ form_row(u.lastname) }}
+                        {{ form_row(formCheckout.lastname) }}
                     </div>
                 </div>
-                {{ form_row(u.street) }}
+                {{ form_row(formCheckout.street) }}
                 <div class="row">
                     <div class="col-sm-3">
-                        {{ form_row(u.postcode) }}
+                        {{ form_row(formCheckout.postcode) }}
                     </div>
                     <div class="col-sm-5">
-                        {{ form_row(u.city) }}
+                        {{ form_row(formCheckout.city) }}
                     </div>
                     <div class="col-sm-4">
-                        {{ form_row(u.country) }}
+                        {{ form_row(formCheckout.country) }}
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-6 ">
-                        {{ form_row(u.email) }}
+                        {{ form_row(formCheckout.email) }}
                     </div>
                     <div class="col-sm-6 ">
-                        {{ form_row(u.phone) }}
+                        {{ form_row(formCheckout.phone) }}
                     </div>
                 </div>
                 {% if app.user is null %}
-                    {{ form_row(u.password) }}
+                    {{ form_row(formCheckout.password) }}
                 {% else %}
                     {# Pretend that field is already rendered (in order t hide it) #}
-                    {% do u.password.setRendered() %}
+                    {% do formCheckout.password.setRendered() %}
                 {% endif %}
 
             </div>
             <div class="col-md-5">
 
                 <div class="sticky">
-                    <h3 class="mt-0">Delivery</h3>
-                    {{ form_row(formCheckout.delivery.method) }}
 
-                    <button class="btn btn-primary btn-lg my-4 w-100">
+                    <h3 class="mt-0">Delivery</h3>
+                    {{ form_row(formCheckout.deliveryMethod) }}
+
+                    <h3 class="mt-0">Payment</h3>
+                    {{ form_row(formCheckout.paymentMethod) }}
+
+                    <button type="submit" class="btn btn-primary btn-lg my-4 w-100">
                         <i class="fas fa-check me-2"></i>Continue to Payment
                     </button>
                     <img class="img-fluid" src="img/checkout/guaranties.jpg" alt="">
                 </div>
-                
+
             </div>
         </div>
     {{form_end(formCheckout)}}
@@ -86,12 +89,12 @@
         {% for item in cart %}
             <tr>
                 <td>{{item.product.name}}</td>
-                <td><span class="mx-2">{{item.qty}}</span></td>
+                <td><span class="mx-2">{{item.quantity}}</span></td>
                 <td>{{ item.total|price }}</td>
             </tr>
         {% endfor %}
         <tr>
-            <th colspan=2>Total</th>
+            <th colspan=2>Total <span class="small">(without delivery)</span></th>
             <th>{{ total|price }}</th>
         </tr>
     </table>

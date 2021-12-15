@@ -21,7 +21,7 @@
                 }} %}
             {% else %}    
                 {% include "_parts/_navbar_links.html.twig" with {links: {
-                    3:{icon: "fas fa-user", path: path("user_show")},
+                    3:{icon: "fas fa-user", path: path("account_show")},
                     4:{btn: "Log out", path: path("security_logout"), class:"btn-sm", color: "danger"}
                 }} %}
             {% endif %}

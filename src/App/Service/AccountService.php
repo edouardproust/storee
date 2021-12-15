@@ -3,16 +3,12 @@
 namespace App\App\Service;
 
 use App\Entity\Product;
-use App\Entity\Purchase;
 use App\Entity\PurchaseItem;
+use App\Repository\ProductRepository;
+use stdClass;
 
 class AccountService
 {
-
-    public function getUserData(Purchase $purchase)
-    {
-        return unserialize($purchase->getUserData());
-    }
 
     public function getProductData(PurchaseItem $purchaseItem): Product
     {

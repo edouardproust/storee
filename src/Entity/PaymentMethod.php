@@ -6,6 +6,8 @@ use App\Repository\PaymentMethodRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
  * @ORM\Entity(repositoryClass=PaymentMethodRepository::class)
@@ -23,6 +25,11 @@ class PaymentMethod
      * @ORM\Column(type="string", length=255)
      */
     private $name;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $slug;
 
     /**
      * @ORM\OneToMany(targetEntity=Purchase::class, mappedBy="paymentMethod")
@@ -47,6 +54,18 @@ class PaymentMethod
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
 
         return $this;
     }
@@ -80,4 +99,5 @@ class PaymentMethod
 
         return $this;
     }
+
 }

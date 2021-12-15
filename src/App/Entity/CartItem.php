@@ -11,12 +11,12 @@ class CartItem
      * @var Product
      */
     private $product;
-    private $qty;
+    private $quantity;
 
-    public function __construct(?Product $product, int $qty)
+    public function __construct(?Product $product, int $quantity)
     {
         $this->product = $product;
-        $this->qty = $qty;
+        $this->quantity = $quantity;
     }
 
     public function getProduct(): ?Product
@@ -24,14 +24,14 @@ class CartItem
         return $this->product;
     }
 
-    public function getQty(): ?int
+    public function getQuantity(): ?int
     {
-        return $this->qty;
+        return $this->quantity;
     }
 
     public function getTotal(): ?float
     {
-        return $this->product->getPrice() * $this->getQty();
+        return $this->product->getPrice() * $this->getQuantity();
     }
 
 }

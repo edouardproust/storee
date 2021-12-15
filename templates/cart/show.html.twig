@@ -16,7 +16,7 @@
                     <td>{{item.product.name}}</td>
                     <td>
                         <a href="{{ path("cart_minus",{id:item.product.id}) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-minus"></i></a>
-                        <span class="mx-2">{{item.qty}}</span>
+                        <span class="mx-2">{{item.quantity}}</span>
                         <a href="{{ path("cart_plus",{id:item.product.id}) }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-plus"></i></a>
                     </td>
                     <td>

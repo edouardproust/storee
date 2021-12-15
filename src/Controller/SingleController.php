@@ -1,12 +1,10 @@
 <?php namespace App\Controller;
 
+use App\App\Service\StripeService;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Validator\Constraints\Collection;
-use Symfony\Component\Validator\Constraints\GreaterThan;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SingleController extends AbstractController {
 
@@ -22,9 +20,9 @@ class SingleController extends AbstractController {
      */
     public function home(): Response  
     {
-        $products = $this->productRepository->findBy([], ["createdAt" => "DESC"], 3);
         return $this->render('single/home.html.twig', [
-            'products' => $products
+            'lastProducts' => $this->productRepository->FindMostRecent(3),
+            'popularProducts' => $this->productRepository->FindMostViewed(3)
         ]);
     }
 
@@ -100,9 +98,13 @@ class SingleController extends AbstractController {
     /**
      * @Route("/test", name="test")
      */
-    public function test(ValidatorInterface $validator): Response  
+    public function test(StripeService $stripeService): Response  
     {
         // Do testing here
+        if(!$this->getUser() || !in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+            $this->addFlash('danger', 'Only admins can do developement tests.');
+            return $this->redirectToRoute('home');
+        }
         return $this->render('test.html.twig');
     }
 

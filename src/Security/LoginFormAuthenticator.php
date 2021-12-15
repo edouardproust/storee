@@ -20,7 +20,7 @@ use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface
 class LoginFormAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     private const LOGIN_ROUTE = 'security_login';
-    private const SUCCESS_REDIRECT_ROUTE = 'user_show';
+    private const SUCCESS_REDIRECT_ROUTE = 'account_show';
     private const SUCCESS_REDIRECT_ROUTE_ADMIN = 'admin';
 
     private $urlGenerator;

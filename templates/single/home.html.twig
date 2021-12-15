@@ -3,16 +3,30 @@
 {% set title = "Home" %}
 
 {% block content %}
-    <section class="mb-5">
-        <h2>Our last products</h2>
-        <div class="row">
-            {% for p in products %}
-                <div class="col-4">
-                    {% include "_parts/_product-card.html.twig" with { product: p } %}
-                </div>
-            {% endfor %}
-        </div>
-    </section>
+    {% if lastProducts is not empty %}
+        <section>
+            <h2>New products</h2>
+            <div class="row g-4 mb-4">
+                {% for p in lastProducts %}
+                    <div class="col-4">
+                        {% include "_parts/_product-card.html.twig" with { product: p } %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+    {% if popularProducts is not empty %}
+        <section>
+            <h2>Popular products</h2>
+            <div class="row g-4">
+                {% for p in popularProducts %}
+                    <div class="col-4">
+                        {% include "_parts/_product-card.html.twig" with { product: p } %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
     <section>
         <h2>Why choose us?</h2>
         {% include "_parts/_icon-cards.html.twig" with {
@@ -24,6 +38,5 @@
                 4: { icon: "fa fa-smile", content: "Happy clients" }
             }
         } %}
-        <i class="fa fa-envira" aria-hidden="true"></i>
     </section>
 {% endblock %}

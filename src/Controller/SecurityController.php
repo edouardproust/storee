@@ -40,4 +40,15 @@ class SecurityController extends AbstractController
         $this->addFlash('success', 'Your are now logged out.');
         return $this->redirectToRoute('security_login');
     }  
+
+    /**
+     * @Route("/login/logged-out", name="security_checkout_register")
+     */
+    public function checkoutRegister(): Response
+    {
+        $this->addFlash('success', 'Your are now connected.');
+        return $this->redirectToRoute('security_login');
+    }  
+
+
 }

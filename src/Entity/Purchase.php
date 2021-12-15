@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\App\Helper\DeliveryHelper;
 use App\Repository\PurchaseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,14 +24,9 @@ class Purchase
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="purchases")
+     * @ORM\OneToMany(targetEntity=PurchaseItem::class, mappedBy="purchase", orphanRemoval=true)
      */
-    private $user;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    private $purchaseItems;
 
     /**
      * @ORM\Column(type="integer")
@@ -40,14 +34,9 @@ class Purchase
     private $total;
 
     /**
-     * @ORM\Column(type="text", length=10000)
+     * @ORM\Column(type="datetime")
      */
-    private $userData;
-
-    /**
-     * @ORM\OneToMany(targetEntity=PurchaseItem::class, mappedBy="purchase", orphanRemoval=true)
-     */
-    private $purchaseItems;
+    private $createdAt;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -55,84 +44,73 @@ class Purchase
     private $status = self::STATUS_PENDING;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $firstname;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $lastname;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $street;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $postcode;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $city;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $email;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $phone;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $password;
+
+    public function __construct()
+    {
+        $this->purchaseItems = new ArrayCollection();
+    }
+    
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="purchases")
+     */
+    private $user;
+
+    /**
      * @ORM\ManyToOne(targetEntity=DeliveryMethod::class)
      */
-    private $delivery;
+    private $deliveryMethod;
 
     /**
      * @ORM\ManyToOne(targetEntity=PaymentMethod::class, inversedBy="purchases")
      */
     private $paymentMethod;
 
-    public function __construct()
-    {
-        $this->purchaseItems = new ArrayCollection();
-    }
-
-    // public function __get($property)
-    // {
-    //     $getter = fnHelper::generateGetter($property);
-    //     if(null !== $this->getUser()) {
-    //         if(method_exists(User::class, $getter)) {
-    //             return $this->getUser()->$getter();
-    //         } elseif(method_exists(DeliveryMethod::class, $getter)) {
-    //             return $this->getDelivery()->$getter();
-    //         }
-    //     }
-    //     return null;
-    // }
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $country;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getTotal(): ?int
-    {
-        return $this->total;
-    }
-
-    public function setTotal(int $total): self
-    {
-        $this->total = $total;
-
-        return $this;
-    }
-
-    public function getUserData(): ?string
-    {
-        return $this->userData;
-    }
-
-    public function setUserData(string $userData): self
-    {
-        $this->userData = $userData;
-
-        return $this;
     }
 
     /**
@@ -165,6 +143,30 @@ class Purchase
         return $this;
     }
 
+    public function getTotal(): ?int
+    {
+        return $this->total;
+    }
+
+    public function setTotal(int $total): self
+    {
+        $this->total = $total;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
     public function getStatus(): ?string
     {
         return $this->status;
@@ -177,14 +179,134 @@ class Purchase
         return $this;
     }
 
-    public function getDelivery(): ?DeliveryMethod
+    public function getFirstname(): ?string
     {
-        return $this->delivery;
+        return $this->firstname;
     }
 
-    public function setDelivery(?DeliveryMethod $delivery): self
+    public function setFirstname(string $firstname): self
     {
-        $this->delivery = $delivery;
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(string $lastname): self
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getStreet(): ?string
+    {
+        return $this->street;
+    }
+
+    public function setStreet(string $street): self
+    {
+        $this->street = $street;
+
+        return $this;
+    }
+
+    public function getPostcode(): ?string
+    {
+        return $this->postcode;
+    }
+
+    public function setPostcode(string $postcode): self
+    {
+        $this->postcode = $postcode;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): self
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): self
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(?string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getDeliveryMethod(): ?DeliveryMethod
+    {
+        return $this->deliveryMethod;
+    }
+
+    public function setDeliveryMethod(?DeliveryMethod $deliveryMethod): self
+    {
+        $this->deliveryMethod = $deliveryMethod;
 
         return $this;
     }
@@ -200,4 +322,5 @@ class Purchase
 
         return $this;
     }
+
 }

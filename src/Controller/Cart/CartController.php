@@ -54,7 +54,7 @@ class CartController extends CartAbstractController
     {
         $this->checkIfProductExists($id, $this->productRepository);
         $this->cartService->removeOneItem($id);
-        $this->addFlash("danger", "The product has been removed from your cart.");
+        $this->addFlash("success", "The product has been removed from your cart.");
         return $this->redirectToRoute('cart');
     }
 
@@ -67,7 +67,7 @@ class CartController extends CartAbstractController
     {
         $this->checkIfProductExists($id, $this->productRepository);
         $this->cartService->removeItemsRow($id);
-        $this->addFlash("danger", "The product has been removed from your cart.");
+        $this->addFlash("success", "The product has been removed from your cart.");
         return $this->redirectToRoute('cart');
     }
 

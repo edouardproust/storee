@@ -2,10 +2,12 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\PrePersist;
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -69,6 +71,11 @@ class Product
      */
     private $purchaseItems;
 
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $views = 0;
+
     public function __construct()
     {
         $this->purchaseItems = new ArrayCollection();
@@ -125,7 +132,7 @@ class Product
         return $this->slug;
     }
 
-    public function setSlug(string $slug): self
+    public function setSlug(?string $slug): self
     {
         $this->slug = $slug;
 
@@ -206,6 +213,18 @@ class Product
                 $purchaseItem->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getViews(): ?int
+    {
+        return $this->views;
+    }
+
+    public function setViews(?int $views): self
+    {
+        $this->views = $views;
 
         return $this;
     }

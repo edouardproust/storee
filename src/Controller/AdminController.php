@@ -2,17 +2,18 @@
 
 namespace App\Controller;
 
+use App\App\Service\AccountService;
 use App\Form\UserAdminType;
-use App\Repository\CategoryRepository;
-use App\Repository\DeliveryCountryRepository;
-use App\Repository\DeliveryMethodRepository;
-use App\Repository\ProductRepository;
 use App\Repository\UserRepository;
+use App\Repository\ProductRepository;
+use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\DeliveryMethodRepository;
+use App\Repository\DeliveryCountryRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class AdminController extends AbstractController
 {
@@ -35,9 +36,9 @@ class AdminController extends AbstractController
      * 
      * @Route("/admin/products", name="admin_products")
      */
-    public function products(ProductRepository $productRepo): Response
+    public function products(ProductRepository $productRepository): Response
     {
-        $products = $productRepo->findBy([], [
+        $products = $productRepository->findBy([], [
             'createdAt' => "DESC"
         ]);
         return $this->render('admin/products.html.twig', [
@@ -128,6 +129,18 @@ class AdminController extends AbstractController
         return $this->render('admin/delivery.html.twig', [
             'methods' => $methods,
             'countries' => $countries
+        ]);
+    }
+
+    /**
+     * @Route("/admin/stats", name="admin_stats")
+     * @return Response 
+     */
+    public function stats($projectDir, ProductRepository $productRepository, AccountService $accountService): Response
+    {
+        $mostViewedProducts = $productRepository->findMostViewed();
+        return $this->render('admin/stats.html.twig', [
+            'mostViewedProducts' => $mostViewedProducts
         ]);
     }
 

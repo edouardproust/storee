@@ -14,8 +14,8 @@
             <th scope="col">Order Nr.</th>
             <th scope="col">Date</th>
             <th scope="col">Products</th>
-            <th scope="col">Total</th>
             <th scope="col">Delivery</th>
+            <th scope="col">Total</th>
             <th scope="col">Address</th>
             <th scope="col">Payment Status</th>
         </tr>
@@ -29,22 +29,30 @@
                         <div>{{ item.quantity }}x {{ data.name }} ({{ item.total|price }})</div>
                     {% endfor %}
                 </td>
+                <td>{{ purchase.deliveryMethod.name }} ({{ purchase.deliveryMethod.price|price }})</td>
                 <td>{{ purchase.total|price }}</td>
-                <td>{{ purchase.delivery.name }}</td>
                 <td class="small">
-                    {% set data = accountService.getUserData(purchase) %}
-                    <div>{{ data.firstname }} {{ data.lastname }}</div>
-                    <div>{{ data.street }}</div>
-                    <div>{{ data.postcode }} {{ data.city }}</div>
-                    <div>{{ data.country }}</div>
-                    <div><i class="me-2 fas fa-phone fa-sm"></i>{{ data.phone }}</div>
+                    <div>{{ purchase.firstname }} {{ purchase.lastname }}</div>
+                    <div>{{ purchase.street }}</div>
+                    <div>{{ purchase.postcode }} {{ purchase.city }}</div>
+                    <div>{{ purchase.country }}</div>
+                    <div><i class="me-2 fas fa-phone fa-sm"></i>{{ purchase.phone }}</div>
                 </td>
                 <td>{{ purchase.status|lower|capitalize }}
                     {% if purchase.status is same as checkoutService.getPaymentStatusConst('pending') %}
-                        <div class="mt-2">
-                            <a href="#" class="btn btn-primary btn-sm">
-                                <i class="fas fa-credit-card me-1"></i> Pay now
-                            </a>
+                        <div class="mt-2 small">
+                            <div>
+                                <a href="{{ path('checkout_payment', {'id':purchase.id, 'method':purchase.paymentMethod.slug}) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-credit-card me-1"></i> Pay now
+                                </a>
+                            </div>
+                            <div>
+                                <a href="{{ path("account_edit_order", {"id":purchase.id}) }}">Edit</a>
+                                <span> | </span>
+                                <a href="{{ path("account_delete_order", {"id":purchase.id}) }}">
+                                    <span class="text-danger">Cancel</span>
+                                </a>
+                            </div>
                         </div>
                     {% endif %}
                 </td>

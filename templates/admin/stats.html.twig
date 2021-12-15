@@ -1,0 +1,29 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Statistics" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Statistics"}
+        }
+    }%}
+{% endblock %}
+
+{% block content %}
+
+    <h3>Products views</h3>
+    <table class="table">
+        <tr>
+            <th scope="col">Product</th>
+            <th scope="col">Views</th>
+        {% for p in mostViewedProducts %}
+        <tr>
+            <td><a href="{{ path("product", {"category_slug":p.category.slug, "slug":p.slug}) }}" target="_blank">{{ p.name }}</a></td>
+            <td>{{ p.views ?? 0 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

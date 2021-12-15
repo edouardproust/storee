@@ -2,8 +2,23 @@
 
 namespace App\App\Helper;
 
+use Symfony\Component\HttpKernel\KernelInterface;
+
 class UrlHelper 
 {
+
+    /** @var string */
+    private $projectDir;
+
+    public function __construct($projectDir)
+    {
+        $this->projectDir = $projectDir;
+    }
+
+    public function getProjectDir(): string
+    {
+        return $this->kernel->getProjectDir();
+    }
 
     /**
      * Check an url before the user access it. 

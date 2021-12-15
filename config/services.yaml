@@ -10,6 +10,8 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $projectDir: '%kernel.project_dir%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -21,14 +23,69 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
-    # controllers config
+    # Controllers
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
-
+    # App services & helpers
     App\App\Service\StripeService:
         arguments:
-            $secretKey: sk_test_26PHem9AhJZvU623DfE1x4sd
+            $publicKey: "%env(STRIPE_PUBLIC_KEY)%"
+            $secretKey: "%env(STRIPE_SECRET_KEY)%"
+
+    # Doctrine listeners
+    
+    App\EventListener\Doctrine\CategoryListener:
+        tags: [{
+            name: 'doctrine.orm.entity_listener',
+            event: prePersist,
+            entity: App\Entity\Category
+        },{
+            name: 'doctrine.orm.entity_listener',
+            event: preUpdate,
+            entity: App\Entity\Category
+        }]
+
+    App\EventListener\Doctrine\ProductListener:
+        tags: [{
+            name: 'doctrine.orm.entity_listener',
+            event: prePersist,
+            entity: App\Entity\Product,
+        }]
+
+    App\EventListener\Doctrine\UserListener:
+        tags: [{
+            name: 'doctrine.orm.entity_listener',
+            event: prePersist,
+            entity: App\Entity\User
+        }]
+    
+    App\EventListener\Doctrine\PurchaseItemListener:
+        tags: [{
+            name: 'doctrine.orm.entity_listener',
+            event: prePersist,
+            entity: App\Entity\PurchaseItem
+        }]
+
+    App\EventListener\Doctrine\PurchaseListener:
+        tags: [{
+            name: 'doctrine.orm.entity_listener',
+            event: prePersist,
+            entity: App\Entity\Purchase
+        },{
+            name: 'doctrine.orm.entity_listener',
+            event: preFlush,
+            entity: App\Entity\Purchase
+        }]
+
+    App\EventListener\Doctrine\PaymentMethodListener:
+        tags: [{
+            name: 'doctrine.orm.entity_listener',
+            event: prePersist,
+            entity: App\Entity\PaymentMethod
+        },{
+            name: 'doctrine.orm.entity_listener',
+            event: preUpdate,
+            entity: App\Entity\PaymentMethod
+        }]

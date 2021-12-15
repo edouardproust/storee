@@ -34,9 +34,12 @@ class DeliveryCountry
      */
     private $deliveryMethods;
 
+
     public function __construct()
     {
         $this->deliveryMethods = new ArrayCollection();
+        $this->purchases = new ArrayCollection();
+        $this->purchase = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,4 +97,5 @@ class DeliveryCountry
 
         return $this;
     }
+
 }

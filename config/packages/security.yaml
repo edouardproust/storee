@@ -22,7 +22,9 @@ security:
             provider: app_user_provider
             entry_point: App\Security\AuthenticationEntryPoint
             access_denied_handler: App\Security\AccessDeniedHandler
-            custom_authenticator: App\Security\LoginFormAuthenticator
+            custom_authenticator: 
+                - App\Security\LoginFormAuthenticator
+                - App\Security\CheckoutRegisterAuthenticator
             # form_login:
             #     login_path: security_login
             #     check_path: security_login

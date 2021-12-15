@@ -17,10 +17,7 @@ use Doctrine\{
     Persistence\ObjectManager,
     Bundle\FixturesBundle\Fixture
 };
-use Symfony\Component\{
-    String\Slugger\SluggerInterface,
-    PasswordHasher\Hasher\UserPasswordHasherInterface
-};
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture {
 
@@ -30,8 +27,12 @@ class AppFixtures extends Fixture {
     const CATEGORIES = 10;
     const PRODUCTS = 27;
     const USERS = 34;
+    /** Must match a $value in App\App\Helper\DeliveryHelper::worldCountries() */
+    const USERS_COUNTRY= 'United States'; 
     const PURCHASES = 41;
-    const MAX_ROWS_PER_PURCHASE = 8;
+    const PURCHASE_MAX_ROWS = 8;
+    const PURCHASE_REGISTERED_USERS_PERCENT = 80;
+    const PURCHASE_PAID_PERCENT = 90;
     const MAX_QTY_PER_ROW = 5;
     const DELIVERY_METHODS = [
         'USPS' => ['Normal - 72h', 490, ['US' => "United States"]], 
@@ -40,24 +41,17 @@ class AppFixtures extends Fixture {
     ];
     const PAYMENT_METHODS = ["Stripe"];
 
-    private $slugger;
     private $hasher;
     private $faker;
 
     /** @var User[] */
-    private $users = [];
+    private $users = []; // contains Admin too
 
     /** @var Product[] */
     private $products = [];
 
     /** @var Category[] */
     private $categories = [];
-
-    /** @var Purchase[] */
-    private $purchases = [];
-
-    /** @var PurchaseItem[] */
-    private $purchaseItems = [];
 
     /** @var DeliveryCountry */
     private $deliveryCountries = [];
@@ -68,9 +62,14 @@ class AppFixtures extends Fixture {
     /** @var PaymentMethod */
     private $paymentMethods = [];
 
-    public function __construct(SluggerInterface $slugger, UserPasswordHasherInterface $hasher)
+    /** @var Purchase[] */
+    private $purchases = [];
+
+    /** @var PurchaseItem[] */
+    private $purchaseItems = [];
+
+    public function __construct(UserPasswordHasherInterface $hasher)
     {
-        $this->slugger = $slugger;
         $this->hasher = $hasher;
         $this->faker = \Faker\Factory::create();
     }
@@ -83,30 +82,25 @@ class AppFixtures extends Fixture {
         $this->faker->addProvider(new \Bluemmb\Faker\PicsumPhotosProvider($this->faker));
 
         // create entities
+        $this->createAdmin();
         $this->createUsers();
         $this->createCategories();
         $this->createProducts();
-        $this->createPurchases();
-        $this->createPurchaseItems();
         $this->createDeliveryCountries();
         $this->createDeliveryMethods();
         $this->createPaymentMethods();
+        $this->createPurchases();
+        $this->createPurchaseItems();
         
         // save entities in an array
         foreach($this->users as $user) {
-           $manager->persist($user); 
+           $manager->persist($user); // contains admin too
         }
         foreach($this->products as $product) {
             $manager->persist($product);
         }
         foreach($this->categories as $category) {
             $manager->persist($category);
-        }
-        foreach($this->purchases as $purchase) {
-            $manager->persist($purchase);
-        }
-        foreach($this->purchaseItems as $purchaseItem) {
-            $manager->persist($purchaseItem);
         }
         foreach($this->deliveryCountries as $deliveryCountry) {
             $manager->persist($deliveryCountry);
@@ -117,13 +111,18 @@ class AppFixtures extends Fixture {
         foreach($this->paymentMethods as $paymentMethod) {
             $manager->persist($paymentMethod);
         }
+        foreach($this->purchases as $purchase) {
+            $manager->persist($purchase);
+        }
+        foreach($this->purchaseItems as $purchaseItem) {
+            $manager->persist($purchaseItem);
+        }
 
         $manager->flush();
     }
-    
-    private function createUsers(): void
+
+    private function createAdmin(): void
     {
-        // admin
         $admin = new User();
         $admin
             ->setEmail(self::ADMIN_USERNAME)
@@ -135,28 +134,47 @@ class AppFixtures extends Fixture {
             ->setStreet($this->faker->streetAddress())
             ->setPostcode($this->faker->postcode())
             ->setCity($this->faker->city())
-            ->setCountry("USA")
+            ->setCountry(self::USERS_COUNTRY)
             ->setPhone($this->faker->phoneNumber());
         $this->users[] = $admin;
-
-        // other users
+    }
+    
+    /**
+     * Create all users
+     * @return void 
+     */
+    private function createUsers(): void
+    {
         for($u = 1; $u <= self::USERS; $u++) {
-            $user = new User();
-            $user
-                ->setFirstname($this->faker->firstName())
-                ->setLastname($this->faker->lastName())
-                ->setEmail(strtolower($user->getFirstname()."-".$user->getLastname())."@".$this->faker->freeEmailDomain())
-                ->setPassword($this->hasher->hashPassword($user, strtolower($user->getFirstname())))
-                ->setCreatedAt(new \DateTime('today'))
-                ->setStreet($this->faker->streetAddress())
-                ->setPostcode($this->faker->postcode())
-                ->setCity($this->faker->city())
-                ->setCountry("USA")
-                ->setPhone($this->faker->phoneNumber());
+            $user = $this->createOneUser(true);
             $this->users[] = $user;
         }
     }
-        
+
+    /**
+     * Create one user
+     * @param bool $setPassword Use False only for entities that will not be persisted. Use True (default) otherwise.
+     * @return void 
+     */
+    private function createOneUser(bool $setPassword = true): User
+    {
+        $user = new User();
+        $user
+            ->setFirstname($this->faker->firstName())
+            ->setLastname($this->faker->lastName())
+            ->setEmail(strtolower($user->getFirstname()."-".$user->getLastname())."@".$this->faker->freeEmailDomain())
+            ->setCreatedAt(new \DateTime('today'))
+            ->setStreet($this->faker->streetAddress())
+            ->setPostcode($this->faker->postcode())
+            ->setCity($this->faker->city())
+            ->setCountry(self::USERS_COUNTRY)
+            ->setPhone($this->faker->phoneNumber());
+        if($setPassword) {
+            $user->setPassword($this->hasher->hashPassword($user, strtolower($user->getFirstname())));
+        } 
+        return $user;
+    }
+    
     private function createCategories(): void
     {
         // Category "Undefined"
@@ -177,9 +195,7 @@ class AppFixtures extends Fixture {
             }
             $categoryNames[] = $fakeCatName;
             // register category
-            $category
-                ->setName($fakeCatName)
-                ->setSlug(strtolower($this->slugger->slug($category->getName())));
+            $category->setName($fakeCatName);
             $this->categories[] = $category;
         }
     }
@@ -191,53 +207,12 @@ class AppFixtures extends Fixture {
             $product
                 ->setName($this->faker->productName())
                 ->setPrice($this->faker->price())
-                ->setSlug(strtolower($this->slugger->slug($product->getName())))
                 ->setShortDescription($this->faker->paragraph())
                 ->setMainImage($this->faker->imageUrl(600, 450, true))
-                ->setCreatedAt($this->faker->dateTimeBetween('-1 year', 'now'))
                 ->setCategory($this->faker->randomElement($this->categories));
             $this->products[] = $product;
         }
     } 
-
-
-    private function createPurchases(): void
-    {
-        for($p = 1; $p <= self::PURCHASES; $p++) {
-            $purchase = new Purchase;
-            $purchase
-                ->setUser($this->faker->randomElement($this->users))
-                ->setCreatedAt($this->faker->dateTimeBetween('-6 months'));
-                // ->setStatus(Purchase::STATUS_PENDING);
-                // ->setTotal(); -> set in createPurchaseItems()
-            $purchase->setUserData(serialize($purchase->getUser()));
-            $this->purchases[] = $purchase;
-        }
-    }
-
-    private function createPurchaseItems(): void
-    {
-        foreach($this->purchases as $purchase) {
-            $purchaseItems = mt_rand(1, self::MAX_ROWS_PER_PURCHASE);
-
-            $purchaseTotal = 0;
-            
-            for($pi = 1; $pi <= $purchaseItems; $pi++) {
-                $purchaseItem = new PurchaseItem;
-                $purchaseItem
-                    ->setPurchase($purchase)
-                    ->setProduct($this->faker->randomElement($this->products))
-                    ->setQuantity(mt_rand(1, self::MAX_QTY_PER_ROW))
-                    ->setTotal($purchaseItem->getProduct()->getPrice() * $purchaseItem->getQuantity());
-                $purchaseItem
-                    ->setProductData(serialize($purchaseItem->getProduct()));
-                $this->purchaseItems[] = $purchaseItem;
-
-                $purchaseTotal += $purchaseItem->getTotal();
-            }
-            $purchase->setTotal($purchaseTotal);
-        }
-    }
 
     private function createDeliveryCountries(): void
     {
@@ -266,9 +241,55 @@ class AppFixtures extends Fixture {
     private function createPaymentMethods(): void
     {
         foreach(self::PAYMENT_METHODS as $methodName) {
-            $method = (new PaymentMethod)
-                ->setName($methodName);
+            $method = (new PaymentMethod)->setName($methodName);
             $this->paymentMethods[] = $method;
+        }
+    }
+
+    private function createPurchases(): void
+    {
+        for($p = 1; $p <= self::PURCHASES; $p++) {
+            $purchase = new Purchase;
+            $isRegisteredUser = $this->faker->boolean(self::PURCHASE_REGISTERED_USERS_PERCENT);
+            if($isRegisteredUser) {
+                $user = $this->faker->randomElement($this->users);
+                $purchase->setUser($user);
+            } else {
+                $user = $this->createOneUser(false);
+            }
+            $purchase
+                ->setFirstname($user->getFirstname())
+                ->setLastname($user->getLastname())
+                ->setPassword($user->getPassword())
+                ->setStreet($user->getStreet())
+                ->setPostcode($user->getPostcode())
+                ->setCity($user->getCity())
+                ->setCountry($user->getCountry())
+                ->setEmail($user->getEmail())
+                ->setPhone($user->getPhone())
+                ->setCreatedAt($this->faker->dateTimeBetween('-6 months'))
+                ->setDeliveryMethod($this->faker->randomElement($this->deliveryMethods))
+                ->setPaymentMethod($this->faker->randomElement($this->paymentMethods));
+            $isPaid = $this->faker->boolean(self::PURCHASE_PAID_PERCENT);
+            if($isPaid) {
+                $purchase->setStatus(Purchase::STATUS_PAID);
+            }
+            $this->purchases[] = $purchase;
+        }
+    }
+
+    private function createPurchaseItems(): void
+    {
+        foreach($this->purchases as $purchase) {
+            $purchaseItems = mt_rand(1, self::PURCHASE_MAX_ROWS);
+            for($pi = 1; $pi <= $purchaseItems; $pi++) {
+                $purchaseItem = new PurchaseItem;
+                $purchaseItem
+                    ->setPurchase($purchase)
+                    ->setProduct($this->faker->randomElement($this->products))
+                    ->setQuantity(mt_rand(1, self::MAX_QTY_PER_ROW));
+                $this->purchaseItems[] = $purchaseItem;
+            }
         }
     }
 

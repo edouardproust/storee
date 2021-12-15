@@ -2,6 +2,10 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
+section {
+    margin-bottom: 60px;
+}
+
 .h1,h1 {
 	margin-bottom: 3rem;
     color: gray;

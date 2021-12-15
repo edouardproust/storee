@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8">
+        {% block meta %}
+            <meta charset="UTF-8">
+        {% endblock %}
         <title>{% block title %}{% endblock %} - {{ siteName }}</title>
-        <link rel="icon" href="img/favicon.png">
+        <link rel="icon" href="/img/favicon.png">
         {# Run `composer require symfony/webpack-encore-bundle`
            and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}

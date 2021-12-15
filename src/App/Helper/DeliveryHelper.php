@@ -5,6 +5,10 @@ namespace App\App\Helper;
 class DeliveryHelper
 {
 
+    /**
+     * Add or remove countries from this to match your deliveries options
+     * @return array 
+     */
     public static function deliveryCountries(): array
     {
         return [
@@ -51,6 +55,9 @@ class DeliveryHelper
         ];
     }
 
+    /**
+     * Don't modify this list
+     */
     public static function worldCountries(): array
     {
         return [
