@@ -1,17 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'default.html.twig' %}
 
-{% block title %}Create a product{% endblock %}
+{% set title = "Create a product" %}
 
-{% block body %}
+{% block breadcrumbs %}
     {% include "_parts/_breadcrumb.html.twig" with {
         links:{ 
             0:{name:"Admin", url:path("admin")},
             1:{name:"Create a product"}
         }
     }%}
-   <h1>Create a product</h1>
+{% endblock %}
 
-   {{ form_start(productForm) }}
+{% block content %}
+    {{ form_start(productForm) }}
         {{ form_errors(productForm) }}
         <div class="row">
             <div class="col">
@@ -26,6 +27,5 @@
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Create</button>
-   {{ form_end(productForm) }}
-
+    {{ form_end(productForm) }}
 {% endblock %}

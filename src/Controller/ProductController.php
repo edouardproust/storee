@@ -3,16 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Event\ProductViewEvent;
 use App\Form\ProductType;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Route as RoutingRoute;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class ProductController extends AbstractController
@@ -30,14 +30,19 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Route("/{category_slug}/{slug}", name="product")
+     * @Route("/{category_slug}/{slug}", name="product", priority=-1)
      */
-    public function show($slug): Response
+    public function show($slug, EventDispatcherInterface $dispatcher): Response
     {
         $product = $this->productRepo->findOneBy(['slug' => $slug]);
         if(!$product) {
             throw $this->createNotFoundException("The product does not exist.");
         }
+        
+        // Event hook
+        $productViewEvent = new ProductViewEvent($product);
+        $dispatcher->dispatch($productViewEvent, 'product.view');
+
         return $this->render('product/show.html.twig', [
             'product' => $product,
             'slugger' => $this->slugger
@@ -57,7 +62,6 @@ class ProductController extends AbstractController
                 $product->setCategory($catRepo->findOneBy(['slug' => 'undefined']));
             }
             $product->setSlug(strtolower($this->slugger->slug($product->getName())));
-            $product->setCreatedAt(new \DateTime("now"));
             $this->entityManager->persist($product);
             $this->entityManager->flush();
             return $this->redirectToRoute("admin_products");
@@ -78,6 +82,7 @@ class ProductController extends AbstractController
         ]);
         $form->handleRequest($req);
         if($form->isSubmitted() && $form->isValid()) {
+            $em->persist($product);
             $em->flush();
             return $this->redirectToRoute("admin_products");
         }

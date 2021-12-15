@@ -1,0 +1,53 @@
+<h1>Thank you {{ purchase.firstname }},</h1>
+<p>Your order #{{ purchase.id }} is now confirmed. Our team will start to prepare it very soon.
+ We will write you back when your parcel is shipped.</p>
+<p>For any questions about you order, please contact us <a href="{{ url("contact") }}">here</a>.</p>
+<p><i>Edouard - Storee team</i></p>
+
+<hr>
+
+<h2>Order detail</h2>
+
+<p>Access your account <a href="{{ url("account_show") }}">here</a> to check your order status anytime.</p>
+
+<table>
+    <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Total</th>
+    </tr>
+    {% for item in purchase.purchaseItems %}
+    <tr>
+        <td>{{ item.product.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.total }}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <th colspan="2">Delivery</th>
+        <th>{{ purchase.deliveryMethod.price|price }}</th>
+    </tr>
+    <tr>
+        <th colspan="2">Total</th>
+        <th>{{ purchase.total|price }}</th>
+    </tr>
+</table>
+
+<hr>
+
+<h2>Delivery</h2>
+
+<p><b>Method:</b></p>
+<p>{{ purchase.deliveryMethod.name }} ({{ purchase.deliveryMethod.price|price }})</p>
+<p><b>Address:</b></p>
+<p>
+    {{ purchase.firstname }} {{ purchase.lastname }}<br>
+    {{ purchase.street }}<br>
+    {{ purchase.postcode }} {{ purchase.city }}<br>
+    {{ purchase.country }}<br>
+</p>
+<p><b>Contact:</b></p>
+<ul>
+    <li>Email: {{ purchase.email }}</li>
+    <li>Phone: {{ purchase.phone }}</li>
+</ul>

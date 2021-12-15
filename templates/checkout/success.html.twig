@@ -1,0 +1,24 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Thank you!" %}
+
+{# {% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Cart", url:path("cart")},
+            1:{name:"Checkout", url:"#"},
+            2:{name:"Order confirmation"}
+        }
+    }%}
+{% endblock %} #}
+
+{% block content %}
+    <p><b>Your order has been validated and is in preparation.</b></p>
+    <ul>
+        <li>An confirmation email has been sent on the email address you provided us.</li>
+        <li>You will receive another email when your parcel will be sent.</li>
+    </ul>
+    {% if(app.user) %}
+        <a href="{{ path("account_show") }}" class="btn btn-primary">View my orders</a>
+    {% endif %}
+{% endblock %}

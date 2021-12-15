@@ -2,6 +2,10 @@
 
 use Symfony\Component\Form\DataTransformerInterface;
 
+/**
+ * @link https://symfony.com/doc/current/form/data_transformers.html
+ * @package App\Form\DataTransformer
+ */
 class CentsTransformer implements DataTransformerInterface {
 
     public function transform($value) {

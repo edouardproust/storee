@@ -1,14 +1,16 @@
-{% extends 'base.html.twig' %}
+{% extends 'default.html.twig' %}
 
-{% block title %}{{category.name|title}}{% endblock %}
+{% set title = category.name|title %}
 
-{% block body %}
-   {% include "_parts/_breadcrumb.html.twig" with {
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
        links: {
            1: {name: category.name}
        }
    } %}
-    <h1>{{category.name|title}}</h1>
+{% endblock %}
+
+{% block content %}
     <div class="row g-4">
         {% for product in category.products %}
             <div class="col-4">

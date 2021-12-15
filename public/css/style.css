@@ -2,6 +2,10 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
+section {
+    margin-bottom: 60px;
+}
+
 .h1,h1 {
 	margin-bottom: 3rem;
     color: gray;
@@ -10,8 +14,17 @@ body {
 	margin-bottom: 2rem;
 }
 
+.h3,h3 {
+    margin-top: 2.2rem;
+    margin-bottom: 1.2rem;
+}
+
 a {
     text-decoration: none;
+}
+
+.hidden {
+    display: none;
 }
 
 /* Position */

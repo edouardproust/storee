@@ -3,7 +3,11 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\PrePersist;
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -62,6 +66,21 @@ class Product
      */
     private $createdAt;
 
+    /**
+     * @ORM\OneToMany(targetEntity=PurchaseItem::class, mappedBy="product")
+     */
+    private $purchaseItems;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $views = 0;
+
+    public function __construct()
+    {
+        $this->purchaseItems = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -113,7 +132,7 @@ class Product
         return $this->slug;
     }
 
-    public function setSlug(string $slug): self
+    public function setSlug(?string $slug): self
     {
         $this->slug = $slug;
 
@@ -164,6 +183,48 @@ class Product
     public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PurchaseItem[]
+     */
+    public function getPurchaseItems(): Collection
+    {
+        return $this->purchaseItems;
+    }
+
+    public function addPurchaseItem(PurchaseItem $purchaseItem): self
+    {
+        if (!$this->purchaseItems->contains($purchaseItem)) {
+            $this->purchaseItems[] = $purchaseItem;
+            $purchaseItem->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removePurchaseItem(PurchaseItem $purchaseItem): self
+    {
+        if ($this->purchaseItems->removeElement($purchaseItem)) {
+            // set the owning side to null (unless already changed)
+            if ($purchaseItem->getProduct() === $this) {
+                $purchaseItem->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getViews(): ?int
+    {
+        return $this->views;
+    }
+
+    public function setViews(?int $views): self
+    {
+        $this->views = $views;
 
         return $this;
     }

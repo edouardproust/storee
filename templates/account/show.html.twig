@@ -1,0 +1,88 @@
+{% extends 'default.html.twig' %}
+
+{% set u = app.user %}
+{% set title = "Hello " ~ u.firstname ~ " " ~ u.lastname %}
+
+{% block content %}
+
+    <h3>My orders</h3>
+    {% if purchases | length <= 0 %}
+        No orders yet.
+    {% else %}
+        <table class="table">
+        <tr>
+            <th scope="col">Order Nr.</th>
+            <th scope="col">Date</th>
+            <th scope="col">Products</th>
+            <th scope="col">Delivery</th>
+            <th scope="col">Total</th>
+            <th scope="col">Address</th>
+            <th scope="col">Payment Status</th>
+        </tr>
+        {% for purchase in purchases %}
+            <tr>
+                <td>{{ purchase.id }}</td>
+                <td>{{ purchase.createdAt | date("m/d/Y") }}</td>
+                <td>
+                    {% for item in purchase.purchaseItems %}
+                        {% set data = accountService.getProductData(item) %}
+                        <div>{{ item.quantity }}x {{ data.name }} ({{ item.total|price }})</div>
+                    {% endfor %}
+                </td>
+                <td>{{ purchase.deliveryMethod.name }} ({{ purchase.deliveryMethod.price|price }})</td>
+                <td>{{ purchase.total|price }}</td>
+                <td class="small">
+                    <div>{{ purchase.firstname }} {{ purchase.lastname }}</div>
+                    <div>{{ purchase.street }}</div>
+                    <div>{{ purchase.postcode }} {{ purchase.city }}</div>
+                    <div>{{ purchase.country }}</div>
+                    <div><i class="me-2 fas fa-phone fa-sm"></i>{{ purchase.phone }}</div>
+                </td>
+                <td>{{ purchase.status|lower|capitalize }}
+                    {% if purchase.status is same as checkoutService.getPaymentStatusConst('pending') %}
+                        <div class="mt-2 small">
+                            <div>
+                                <a href="{{ path('checkout_payment', {'id':purchase.id, 'method':purchase.paymentMethod.slug}) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-credit-card me-1"></i> Pay now
+                                </a>
+                            </div>
+                            <div>
+                                <a href="{{ path("account_edit_order", {"id":purchase.id}) }}">Edit</a>
+                                <span> | </span>
+                                <a href="{{ path("account_delete_order", {"id":purchase.id}) }}">
+                                    <span class="text-danger">Cancel</span>
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <h3>My informations</h3>
+    {{ form_start(userForm) }}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-sm-6">{{ form_row(userForm.email) }}</div>
+                <div class="col-sm-6">{{ form_row(userForm.password) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">{{ form_row(userForm.firstname) }}</div>
+                <div class="col-sm-6">{{ form_row(userForm.lastname) }}</div>
+            </div>
+            {{ form_row(userForm.street) }}
+            <div class="row">
+                <div class="col-sm-6">{{ form_row(userForm.postcode) }}</div>
+                <div class="col-sm-6">{{ form_row(userForm.city) }}</div>
+            </div>
+            {{ form_row(userForm.country) }}
+            {{ form_row(userForm.phone) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary text-left">Update my informations</button>
+    {{ form_end(userForm) }}
+
+{% endblock %}

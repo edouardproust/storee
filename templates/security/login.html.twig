@@ -1,0 +1,17 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Log in" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col col-4">
+            {% if error %}
+                <div class="alert alert-danger">{{ error.message }}</div>
+            {% endif %} 
+            {{ form_start(loginForm) }}
+            {{ form_widget(loginForm) }}
+            <button type="submit" class="btn btn-primary">Login</button>
+            {{ form_end(loginForm) }}
+        </div>
+    </div>
+{% endblock %}

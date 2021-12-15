@@ -1,8 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'default.html.twig' %}
 
-{% block title %}Edit a product{% endblock %}
+{% set title = "Edit a product" %}
 
-{% block body %}
+{% block breadcrumbs %}
     {% include "_parts/_breadcrumb.html.twig" with {
         links:{ 
             0:{name:"Admin", url:path("admin")},
@@ -10,9 +10,10 @@
             2:{name:"Edit " ~ product.name}
         }
     }%}
-   <h1>Edit {{product.name}}</h1>
+{% endblock %}
 
-   {{ form_start(productForm) }}
+{% block content %}
+    {{ form_start(productForm) }}
         {{ form_errors(productForm) }}
         <div class="row">
             <div class="col">
@@ -27,6 +28,5 @@
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Update product</button>
-   {{ form_end(productForm) }}
-
+    {{ form_end(productForm) }}
 {% endblock %}

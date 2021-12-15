@@ -1,15 +1,17 @@
-{% extends 'base.html.twig' %}
+{% extends 'default.html.twig' %}
 
-{% block title %}Categories{% endblock %}
+{% set title = "Categories" %}
 
-{% block body %}
+{% block breadcrumbs %}
     {% include "_parts/_breadcrumb.html.twig" with {
         links:{ 
             0:{name:"Admin", url:path("admin")},
             1:{name:"Categories"}
         }
     }%}
-    <h1>Categories</h1>
+{% endblock %}
+
+{% block content %}
     <table class="table">
         <tr>
             <th scope="col">Name</th>

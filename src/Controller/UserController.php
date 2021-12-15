@@ -2,44 +2,33 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class UserController extends AbstractController
 {
+
     /**
-     * @Route("/my-account", name="account")
+     * @Route("/register", name="user_create")
      */
-    public function show(): Response
+    public function create(): Response
     {
-        return $this->render('user/show.html.twig');
+        return $this->render('user/create.html.twig');
     }
 
     /**
-     * @Route("/login", name="login")
+     * @Route("/user/delete/{id}", name="user_delete")
      */
-    public function login(): Response
+    public function delete($id, UserRepository $userRepo, EntityManagerInterface $em): Response
     {
-        return $this->render('user/login.html.twig');
+        $user = $userRepo->find($id);
+        $em->remove($user);
+        $em->flush();
+        return $this->redirectToRoute("admin_products");
+        return $this->redirectToRoute("home");
     }
-
-    /**
-     * @Route("/logout", name="logout")
-     */
-    public function logout(): Response
-    {
-        return $this->redirectToRoute("login");
-    }
-
-    /**
-     * @Route("/signin", name="signin")
-     */
-    public function signin(): Response
-    {
-        return $this->render('user/signin.html.twig');
-    }
-
-
 
 }

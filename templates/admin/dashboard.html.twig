@@ -1,12 +1,14 @@
-{% extends 'base.html.twig' %}
+{% extends 'default.html.twig' %}
 
-{% block title %}Admin dashboard{% endblock %}
+{% set title = "Admin dashboard" %}
 
-{% block body %}
+{% block breadcrumbs %}
     {% include "_parts/_breadcrumb.html.twig" with {
         links:{ 0:{name:"Admin"} }
     }%}
-    <h1>Admin dashboard</h1>
+{% endblock %}
+
+{% block content %}
     {% include "_parts/_icon-cards.html.twig" with {
         style: {width:3, bg:"primary", text:"white"},
         cards:{
@@ -14,6 +16,8 @@
             2:{icon:"fas fa-plus", title: "New category", link:path("category_create")},
             3:{icon:"fas fa-edit", title: "Edit a product", link:path("admin_products")},
             4:{icon:"fas fa-edit", title: "Edit a category", link:path("admin_categories")},
+            5:{icon:"fas fa-users", title: "Users", link:path("admin_users")},
+            6:{icon:"fas fa-chart-line", title: "Statistics", link:path("admin_stats")},
         }
     }%}
 {% endblock %}

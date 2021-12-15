@@ -4,6 +4,7 @@ twig:
     globals:
         siteName: "Storee"
         categoryRepository: "@App\\Repository\\CategoryRepository"
+        cartService: "@App\\App\\Service\\CartService"
 
 when@test:
     twig:

@@ -1,0 +1,86 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Payment" %}
+
+{% block meta %}
+    {{ parent() }}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const publicKey = '{{ publicKey }}'
+        const clientSecret = '{{ clientSecret }}'
+        const successUrl = '{{ url(successRoute, {"id":purchase.id}) }}'
+    </script>
+    <script src="/js/checkout.js" defer></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js" defer></script>
+{% endblock %}
+
+{% block content %}
+    <form id="payment-form">
+        <div class="row">
+            <div class="col-md-7 pe-md-5">
+
+                <div class="small mb-4 d-flex align-items-center">
+                    <i class="fas fa-lock me-1"></i>
+                    <i class="fab fa-stripe fa-2x me-2"></i>
+                    <a href="https://stripe.com/docs/security/stripe" target="_blank">Garanteed Safe Checkout</a>
+                    <span class="text-muted ms-2">(256 Bit SSL Encryption)</span>
+                </div>
+                <div id="payment-element"><!--Stripe.js injects the Payment Element--></div>
+                <div id="payment-message" class="hidden"></div>
+                {# <div style="opacity:0.5">
+                    <i class="fab fa-cc-visa fa-2x"></i>
+                    <i class="fab fa-cc-mastercard fa-2x"></i>
+                    <i class="fab fa-cc-amex fa-2x"></i>
+                    <i class="fab fa-cc-discover fa-2x"></i>
+                </div> #}
+
+                <div class="mt-4">
+                    <div class="small text-muted">Products: {{ productsTotal|price }}</div>
+                    <div class="small text-muted">Delivery: {{ purchase.deliveryMethod.price|price }}</div>
+                    <b>Total:</b> {{ purchase.total|price }}
+                </div>
+                <button id="submit" class="btn btn-primary btn-lg my-4 w-100">
+                    <div class="spinner hidden" id="spinner">
+                        <lottie-player src="/img/loading.json"  background="transparent"  speed="1"  style="width: 26px; height: 26px;"  loop  autoplay></lottie-player>
+                    </div>
+                    <span id="button-text">
+                        <i class="fas fa-check me-2"></i>Pay now
+                    </span>
+                </button>
+                <img class="img-fluid" src="/img/checkout/guaranties.jpg" alt="">
+
+            </div>
+        </div>
+    </form>
+
+    <hr class="my-5">
+
+    <h3>Order details</h3>
+    <table class="table">
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Total</th>
+        </tr>
+        {% for item in purchase.purchaseItems %}
+            <tr>
+                <td>{{item.product.name}}</td>
+                <td><span class="mx-2">{{item.quantity}}</span></td>
+                <td>{{ item.total|price }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <th colspan=2>Delivery</th>
+            <th>{{ purchase.deliveryMethod.price|price }}</th>
+        </tr>
+        <tr>
+            <th colspan=2>Total</th>
+            <th>{{ purchase.total|price }}</th>
+        </tr>
+    </table>
+{% endblock %}

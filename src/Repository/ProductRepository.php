@@ -19,22 +19,34 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    // /**
-    //  * @return Product[] Returns an array of Product objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * Get products sorted by DESC views, excluding products with 0 views
+     * @return Product[] Returns an array of Product objects
+     */
+    public function FindMostViewed(int $maxResults = 99999)
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('p.views > 0')
+            ->orderBy('p.views', 'DESC')
+            ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
+
+    /**
+     * Get the most recent products added to the shop (sorted by dateTime)
+     * @return Product[] Returns an array of Product objects
+     */
+    public function FindMostRecent(int $maxResults = 99999)
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.createdAt', 'DESC')
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 
     /*
     public function findOneBySomeField($value): ?Product
