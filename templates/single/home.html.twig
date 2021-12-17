@@ -2,7 +2,21 @@
 
 {% set title = "Home" %}
 
+{% block hero_header %}
+    <div 
+        style="background: url(https://bootstrapious.com/i/snippets/sn-bg-image/bg.jpg); background-size: cover; background-position: center;" 
+        class="page-holder bg-cover py-5"
+    >
+        <div class="container py-5 text-center text-white">
+            <h1 class="font-weight-bold text-white">Let Everyone Know Your <b>Storee</b>.</h1>
+            <p class="lead my-5">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Accusamus architecto temporibus reprehenderit numquam esse, sunt saepe consequuntur neque cumque adipisci aperiam voluptatem ipsam debitis culpa iusto aliquid. Iste, recusandae fugit!</p>
+            <a href="{{ path('catalog') }}" class="btn btn-lg btn-outline-light">Browse products</a>
+        </div>
+    </div>
+{% endblock %}
+
 {% block content %}
+
     {% if lastProducts is not empty %}
         <section>
             <h2>New products</h2>

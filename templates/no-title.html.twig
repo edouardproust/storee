@@ -6,13 +6,18 @@
 
 {% block body %}
 
-    {% for type, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ type }}">{{ message|raw }}</div>
+    {% block hero_header %}{% endblock %}
+    
+    <div class="container my-5">
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}">{{ message|raw }}</div>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
 
-    {% block breadcrumbs %}{% endblock %}
+        {% block breadcrumbs %}{% endblock %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+    </div>
+
 {% endblock %}

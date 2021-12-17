@@ -6,17 +6,20 @@
 
 {% block body %}
 
-    {% for type, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ type }}">{{ message|raw }}</div>
+    <div class="container my-5">
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}">{{ message|raw }}</div>
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
 
-    {% block breadcrumbs %}{% endblock %}
+        {% block breadcrumbs %}{% endblock %}
 
-    {% if title is not same as siteName %}
-        <h1>{{ title }}</h1>
-    {% endif %}
+        {% if title is not same as siteName %}
+            <h1>{{ title }}</h1>
+        {% endif %}
 
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+    </div>
+    
 {% endblock %}

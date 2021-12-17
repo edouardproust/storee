@@ -1,3 +1,10 @@
+:root{
+    --bs-primary: #25a4bb;
+    --bs-primary-rgb: 26, 147, 169;
+    --bs-primary-hover: #126979;
+    --bs-primary-rgb-hover: 17, 91, 104;
+}
+
 body {
     font-family: 'Montserrat', sans-serif;
 }
