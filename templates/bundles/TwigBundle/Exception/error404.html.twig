@@ -1,0 +1,11 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Page not found" %}
+
+{% block content %}
+    <p>Why don't you try one of these pages instead?</p>
+    <div>
+        <a href="{{ path('home') }}" class="btn btn-primary">Home</a>
+        <a href="{{ path('contact') }}" class="btn btn-outline-primary">Contact</a>
+    </div>
+{% endblock %}
