@@ -1,18 +1,27 @@
 <?php namespace App\Controller;
 
+use App\Form\ContactType;
+use App\App\Component\Collection;
 use App\App\Service\StripeService;
+use App\App\Service\ContactService;
 use App\Repository\ProductRepository;
+use App\Event\ContactFormSubmittedEvent;
+use App\Repository\AdminSettingRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class SingleController extends AbstractController {
 
     private $productRepository;
+    private $settings;
 
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductRepository $productRepository, AdminSettingRepository $settings)
     {
         $this->productRepository = $productRepository;
+        $this->settings = $settings;
     }
 
     /**
@@ -27,13 +36,23 @@ class SingleController extends AbstractController {
     }
 
     /**
-     * @Route("/all-products", name="catalog")
+     * @Route("/all-products/{page<\d+>?1}", name="catalog")
      */
-    public function catalog(): Response  
+    public function catalog($page): Response  
     {
-        $products = $this->productRepository->findBy([], ["createdAt" => "DESC"]);
+        $collection = (new Collection($this->productRepository))
+            ->build(
+                $this->settings->get('productPerCollectionPage'), 
+                $this->generateUrl('catalog'),
+                $page,
+                ["createdAt" => "DESC"]
+            );
+        if(@$collection['redirectToPage']) {
+            $page = $collection['redirectToPage'];
+            return $this->redirectToRoute('catalog', ['page' => $page]);
+        }
         return $this->render('single/catalog.html.twig', [
-            'products' => $products
+            'collection' => $collection
         ]);
     }
 
@@ -48,9 +67,19 @@ class SingleController extends AbstractController {
     /**
      * @Route("/contact", name="contact")
      */
-    public function contact(): Response  
+    public function contact(Request $request, EventDispatcherInterface $dispatcher, ContactService $contactService): Response  
     {
-        return $this->render('single/contact.html.twig');
+        $userInfo = $contactService->preFillForm();
+        $form = $this->createForm(ContactType::class, $userInfo);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()) {
+            $message = $form->getData();
+            $contactFormSubmittedEvent = new ContactFormSubmittedEvent($message);
+            $dispatcher->dispatch($contactFormSubmittedEvent, 'contact.success');
+        }
+        return $this->render('single/contact.html.twig', [
+            'contactForm' => $form->createView()
+        ]);
     }
 
     /**

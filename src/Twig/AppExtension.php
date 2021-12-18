@@ -2,18 +2,60 @@
 
 namespace App\Twig;
 
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 use App\App\Helper\UrlHelper;
 use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use App\Repository\CategoryRepository;
+use App\Repository\AdminSettingRepository;
+use InvalidArgumentException;
+use RuntimeException;
+use Doctrine\ORM\NonUniqueResultException;
 
 class AppExtension extends AbstractExtension
 {
+
+    /** @var AdminSettingRepository */
+    private $settings;
+
+    /** @var CategoryRepository */
+    private $categoryRepository;
+
+    public function __construct(AdminSettingRepository $adminSettingRepository, CategoryRepository $categoryRepository)
+    {
+        $this->settings = $adminSettingRepository;
+        $this->categoryRepository = $categoryRepository;
+    }    
+    
+    public function getFunctions()
+    {
+        return [
+            new TwigFunction('setting', [$this, 'getSetting']),
+            new TwigFunction('categories', [$this, 'getAllCategories'])
+        ];
+    }
+
     public function getFilters()
     {
         return [
             new TwigFilter('price', [$this, 'formatPrice']),
             new TwigFilter('replaceIfNotFound', [$this, 'replaceFileIfNotFound']),
         ];
+    }
+
+    /**
+     * Show value of an AdminSetting object, based on its slug
+     * @param string $settingSlug The slug of the setting
+     * @return null|string 
+     */
+    public function getSetting(string $slug): ?string
+    {
+        return $this->settings->get($slug);
+    }
+
+    public function getAllCategories(): array
+    {
+        return $this->categoryRepository->findAll();
     }
 
     public function formatPrice($cents, $currency = 'EUR', $decimalSep = '.', $thousandsSep = ',', $decimals = 2): string

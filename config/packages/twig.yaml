@@ -2,8 +2,6 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     form_themes: ['bootstrap_5_layout.html.twig']
     globals:
-        siteName: "Storee"
-        categoryRepository: "@App\\Repository\\CategoryRepository"
         cartService: "@App\\App\\Service\\CartService"
 
 when@test:

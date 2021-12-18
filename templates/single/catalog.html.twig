@@ -4,10 +4,11 @@
 
 {% block content %}
     <div class="row g-4">
-        {% for product in products %}
+        {% for product in collection.items %}
             <div class="col-4">
                 {% include "_parts/_product-card.html.twig" with { product: product } %}
             </div>
         {% endfor %}
     </div>
+    {% include "_parts/_collection-pagination.html.twig" %}
 {% endblock %}

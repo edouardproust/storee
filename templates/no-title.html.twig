@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% set title = (title|default(siteName)) %}
+{% set title = (title|default(setting('siteName'))) %}
 
 {% block title %}{{ title }}{% endblock %}
 

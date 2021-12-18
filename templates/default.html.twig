@@ -1,6 +1,6 @@
 {% extends "base.html.twig" %}
 
-{% set title = (title|default(siteName)) %}
+{% set title = (title|default(setting('siteName'))) %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -15,7 +15,7 @@
 
         {% block breadcrumbs %}{% endblock %}
 
-        {% if title is not same as siteName %}
+        {% if title is not same as setting('siteName') %}
             <h1>{{ title }}</h1>
         {% endif %}
 

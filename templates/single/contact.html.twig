@@ -3,5 +3,10 @@
 {% set title = "Contact us" %}
 
 {% block content %}
-    Page under construction! Please come back later.
+    <div class="col-md-6">
+        {{ form_start(contactForm) }}
+        {{ form_widget(contactForm) }}
+        <button type="submit" class="btn btn-primary"><i class="fas fa-envelope me-2"></i>Send</button>
+        {{ form_end(contactForm) }}
+    </div>
 {% endblock %}

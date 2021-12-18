@@ -24,16 +24,18 @@ services:
             - '../src/Tests/'
 
     # Controllers
+
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    # App services & helpers
+    # App Services, Helpers & Components
+
     App\App\Service\StripeService:
         arguments:
             $publicKey: "%env(STRIPE_PUBLIC_KEY)%"
             $secretKey: "%env(STRIPE_SECRET_KEY)%"
-
+            
     # Doctrine listeners
     
     App\EventListener\Doctrine\CategoryListener:

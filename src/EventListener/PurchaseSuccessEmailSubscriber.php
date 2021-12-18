@@ -3,36 +3,31 @@
 namespace App\EventListener;
 
 use Exception;
-use App\App\Config;
+use App\App\Service\EmailService;
 use App\Event\PurchaseSuccessEvent;
+use App\Repository\AdminSettingRepository;
 use Symfony\Component\Mime\Address;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class PurchaseSuccessEmailSubscriber implements EventSubscriberInterface
+class PurchaseSuccessEmailSubscriber extends EmailService implements EventSubscriberInterface
 {
 
     /** @var MailerInterface */
     private $mailer;
 
-    /** @var ContainerInterface */
-    private $container;
+    /** @var EmailService */
+    private $emailService;
 
-    /** @var UrlGeneratorInterface */
-    private $urlGenerator;
+    /** @var AdminSettingRepository */
+    private $settings;
 
-    public function __construct(
-        MailerInterface $mailer, 
-        ContainerInterface $container, 
-        UrlGeneratorInterface $urlGenerator)
+    public function __construct(MailerInterface $mailer, EmailService $emailService, AdminSettingRepository $adminSettingRepository)
     {
         $this->mailer = $mailer;
-        $this->container = $container;
-        $this->urlGenerator = $urlGenerator;
+        $this->emailService = $emailService;
+        $this->settings = $adminSettingRepository;
     }
 
     public static function getSubscribedEvents()
@@ -45,10 +40,11 @@ class PurchaseSuccessEmailSubscriber implements EventSubscriberInterface
     public function sendEmail(PurchaseSuccessEvent $purchaseSuccessEvent): void
     {
         $purchase = $purchaseSuccessEvent->getPurchase();
+        $s = $this->settings;
         try {
             $email = (new TemplatedEmail)
                 ->to(new Address($purchase->getEmail(), $purchase->getFirstname() . ' ' . $purchase->getLastname()))
-                ->from(new Address(Config::CONTACT_EMAIL, Config::CONATCT_NAME))
+                ->from(new Address($s->get('contactEmail'), $s->get('contactName')))
                 ->subject('Order nr. ' . $purchase->getId() . ' confirmed' )
                 ->htmlTemplate('emails/purchase-success.html.twig')
                 ->context([
@@ -56,11 +52,7 @@ class PurchaseSuccessEmailSubscriber implements EventSubscriberInterface
                 ]);
             $this->mailer->send($email);
         } catch (Exception $e) {
-            $this->container->get('request_stack')->getSession()->getFlashBag()->add('danger', 
-                'Confirmation email could not be sent.<br>' . 
-                'Please <a href="' . $this-> urlGenerator->generate('contact'). '" target="_blank">Contact us here</a>' . 
-                ' by sending us the following error message: <i>' . $e->getMessage() . '</i>'
-            );
+            $this->emailService->failureFlash($e, "Confirmation email");
         }
     }
 
