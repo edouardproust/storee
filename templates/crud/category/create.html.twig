@@ -1,0 +1,19 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Create a category" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Create a category"}
+        }
+    }%}
+{% endblock %}
+
+{% block content %}
+    {{ form_start(categoryForm) }}
+    {{ form_widget(categoryForm) }}
+    <button type="submit" class="btn btn-primary">Create</button>
+    {{ form_end(categoryForm) }}
+{% endblock %}

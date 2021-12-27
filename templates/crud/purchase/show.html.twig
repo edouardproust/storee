@@ -1,0 +1,79 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Order #" ~ purchase.id %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            2:{name:"Orders", url:path("admin_purchases")},
+            4:{name:"Order #" ~ purchase.id}
+        }
+    }%}
+{% endblock %}
+
+{% block content %}
+    {{ form_start(purchaseForm, {attr: {novalidate:''}}) }}
+        {{ form_errors(purchaseForm) }}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-6">{{ form_row(purchaseForm.firstname) }}</div>
+                    <div class="col-md-6">{{ form_row(purchaseForm.lastname) }}</div>
+                </div>
+               
+                {{ form_row(purchaseForm.street) }}
+                <div class="row">
+                    <div class="col-md-6">{{ form_row(purchaseForm.postcode) }}</div>
+                    <div class="col-md-6">{{ form_row(purchaseForm.country) }}</div>
+                </div>
+                {{ form_row(purchaseForm.city) }}
+                <div class="row">
+                    <div class="col-md-6">{{ form_row(purchaseForm.email) }}</div>
+                    <div class="col-md-6">{{ form_row(purchaseForm.phone) }}</div>
+                </div>
+            </div>
+            <div class="col-md-6 sticky">
+                <div class="mb-3">
+                    <div><b>Total:</b> {{ purchase.total|price }}</div>
+                    <div class="small text-muted"><b>Including delivery:</b> {{ purchase.deliveryMethod.price|price }}</div>
+                    <div><b>Delivery method:</b> {{ purchase.deliveryMethod.name }}</div>
+                    <div><b>Payment method:</b> {{ purchase.paymentMethod.name }}</div>
+                    <div><b>Date:</b> {{ purchase.createdAt|date("m-d-Y") }}</div>
+                </div>
+                {{ form_row(purchaseForm.status) }}
+                <div>
+                    <button type="submit" class="btn btn-primary">Update order</button>
+                    <span class="ms-2">
+                        <a class="text-danger" href="{{ path('purchase_delete',{id:purchase.id}) }}">Cancel order</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    {{ form_end(purchaseForm) }}
+
+<h3 class="mt-5">Products</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Qty</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in purchase.purchaseItems %}
+            <tr>
+                <td>
+                    <a href="{{ path('product', {category_slug: item.product.category.slug, slug:item.product.slug}) }}">
+                        {{item.product.name}}
+                    </a>
+                </td>
+                <td><span class="mx-2">{{item.quantity}}</span></td>
+                <td>{{ item.total|price }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'admin-crud.html.twig' %}
+
+{% set title = "Products" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Products"}
+        }
+    }%}
+{% endblock %}
+
+{% block crud_add_text %}Create new Product{% endblock %}
+{% block crud_add_link %}{{ path("product_create") }}{% endblock %}
+
+{% block content %}
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>{{ collListThLink('ID', 'id', app.request, collection)|raw }}</th>
+                <th class="w-20">{{ collListThLink('Name', 'name', app.request, collection)|raw }}</th>
+                <th>{{ collListThLink('Price', 'price', app.request, collection)|raw }}</th>
+                <th>Main image</th>
+                <th class="w-30">Short description</th>
+                <th>{{ collListThLink('Category', 'category', app.request, collection)|raw }}</th>
+                <th>{{ collListThLink('Created on', 'createdAt', app.request, collection)|raw }}</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in collection.items %}
+            <tr>
+                <td class="small text-muted">{{ product.id }}</td>
+                <td>
+                    <a href="{{path("product",{slug:product.slug, category_slug:product.category.slug})}}">
+                        {{product.name}}
+                    </a>
+                </td>
+                <td>{{product.priceWithCurrency}}</td>
+                <td><img src="{{ product.mainImage|uploadedImgUrl }}" class="admin-collection-img"></td>
+                <td class="small">{{product.shortDescription}}</td>
+                <td>
+                    <a href="{{ path("category",{"slug":product.category.slug}) }}">
+                        {{product.category.name}}
+                    </a>
+                </td>
+                <td>{{product.createdAt|date('m-d-Y')}}</td>
+                <td>
+                    <a href="{{path("product_edit",{id:product.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
+                    <a href="{{path("product_delete",{id:product.id})}}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include "_parts/_collection-pagination.html.twig" %}
+{% endblock %}

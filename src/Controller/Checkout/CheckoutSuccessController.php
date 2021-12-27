@@ -45,12 +45,19 @@ class CheckoutSuccessController extends AbstractController
             return $this->redirectToRoute('cart');
         }
 
-        // Turn status on 'paid' 
-        // [TODO: Use Stripe WebHooks to do this in a secure manner!]
-        $purchase->setStatus(Purchase::STATUS_PAID);
-        $this->em->persist($purchase);
-        $this->em->flush();
-    
+        // Update database
+            // 1. Turn status on 'paid' [TODO: Use Stripe WebHooks to do this in a secure manner!]
+            $purchase->setStatus(Purchase::STATUS_PAID);
+            $this->em->persist($purchase);
+            $this->em->flush();
+            // 2. Add units sold to each products
+            foreach($purchase->getPurchaseItems() as $item) {
+                $product = $item->getProduct();
+                $product->addPurchase($item->getQuantity());
+                $this->em->persist($product);
+            }
+            $this->em->flush();
+
         // empty cart
         $session->remove('cart');
 

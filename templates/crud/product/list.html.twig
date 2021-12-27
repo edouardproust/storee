@@ -1,0 +1,15 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "All products" %}
+
+{% block content %}
+    {% include "_parts/_collection-filter.html.twig" %}
+    <div class="row g-4">
+        {% for product in collection.items %}
+            <div class="col-md-{{ itemColWidth }}">
+                {% include "_parts/_product-card.html.twig" with { product: product } %}
+            </div>
+        {% endfor %}
+    </div>
+    {% include "_parts/_collection-pagination.html.twig" %}
+{% endblock %}

@@ -6,6 +6,7 @@ use App\App\Helper\DeliveryHelper;
 use Faker\Factory;
 use App\Entity\{
     User,
+    Upload,
     Product,
     Category,
     DeliveryCountry,
@@ -52,6 +53,9 @@ class DevFixtures extends AbstractFixture
     /** @var User[] */
     private $users = []; // contains Admin too
 
+    /** @var Upload[] */
+    private $productMainImages = [];
+
     /** @var Product[] */
     private $products = [];
 
@@ -95,6 +99,7 @@ class DevFixtures extends AbstractFixture
         $this->createAdmin();
         $this->createUsers();
         $this->createCategories();
+        $this->createProductMainImages();
         $this->createProducts();
         $this->createDeliveryCountries();
         $this->createDeliveryMethods();
@@ -102,7 +107,10 @@ class DevFixtures extends AbstractFixture
         $this->createPurchases();
         $this->createPurchaseItems();
         
-        // save entities in an array
+        // persist
+        foreach($this->productMainImages as $mainImage) {
+            $manager->persist($mainImage);
+         }
         foreach($this->users as $user) {
            $manager->persist($user); // contains admin too
         }
@@ -128,6 +136,7 @@ class DevFixtures extends AbstractFixture
             $manager->persist($purchaseItem);
         }
 
+        // flush
         $manager->flush();
     }
 
@@ -190,8 +199,7 @@ class DevFixtures extends AbstractFixture
         // Category "Undefined"
         $undefined = new Category;
         $undefined
-            ->setName("Undefined")
-            ->setSlug("undefined");
+            ->setName("Undefined");
         $this->categories[] = $undefined;
 
         // Other categories
@@ -205,8 +213,21 @@ class DevFixtures extends AbstractFixture
             }
             $categoryNames[] = $fakeCatName;
             // register category
-            $category->setName($fakeCatName);
+            $category
+                ->setName($fakeCatName)
+                ->setDescription($this->faker->paragraph());
             $this->categories[] = $category;
+        }
+    }
+
+    private function createProductMainImages(): void
+    {
+        for($p = 1; $p <= self::PRODUCTS; $p++) {
+            $mainImage = new Upload;
+            $mainImage
+                ->setName("fixture-product-$p-mainImage")
+                ->setUrl($this->faker->imageUrl(600, 450, true));
+                $this->productMainImages[] = $mainImage;
         }
     }
 
@@ -218,9 +239,10 @@ class DevFixtures extends AbstractFixture
                 ->setName($this->faker->productName())
                 ->setPrice($this->faker->price())
                 ->setShortDescription($this->faker->paragraph())
-                ->setMainImage($this->faker->imageUrl(600, 450, true))
+                ->setMainImage($this->productMainImages[$p-1])
                 ->setCategory($this->faker->randomElement($this->categories))
-                ->setViews(mt_rand(0, 300));
+                ->setViews(mt_rand(0, 300))
+                ->setCreatedAt($this->faker->dateTimeBetween('-1 year', 'today'));
             $this->products[] = $product;
         }
     } 
@@ -295,11 +317,15 @@ class DevFixtures extends AbstractFixture
             $purchaseItems = mt_rand(1, self::PURCHASE_MAX_ROWS);
             for($pi = 1; $pi <= $purchaseItems; $pi++) {
                 $purchaseItem = new PurchaseItem;
+                $product = $this->faker->randomElement($this->products);
                 $purchaseItem
                     ->setPurchase($purchase)
-                    ->setProduct($this->faker->randomElement($this->products))
+                    ->setProduct($product)
                     ->setQuantity(mt_rand(1, self::MAX_QTY_PER_ROW));
+                $purchase->addPurchaseItem($purchaseItem);
                 $this->purchaseItems[] = $purchaseItem;
+                // add a purchase to the product
+                $product->addPurchase($purchaseItem->getQuantity());
             }
         }
     }

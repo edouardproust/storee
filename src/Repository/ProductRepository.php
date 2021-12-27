@@ -2,9 +2,11 @@
 
 namespace App\Repository;
 
+use App\App\Service\AdminSettingService;
 use App\Entity\Product;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Entity\Category;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Product|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,38 +16,33 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, AdminSettingService $adminSettingService)
     {
         parent::__construct($registry, Product::class);
+        $this->adminSettingService = $adminSettingService;
     }
 
     /**
-     * Get products sorted by DESC views, excluding products with 0 views
-     * @return Product[] Returns an array of Product objects
+     * Get a list of products, based on several criterias like: the category, the limit and the order criteria.
+     * 
+     * @param Category|null $category Filter product by categry | NULL to get all products. Default: null
+     * @param ?int $maxResults Limit the number of products | null for unlimited amount. Default: null
+     * @param string $orderBy Property to order by. This must be a property of the Product entity. Eg. 'views', 'purchases', 'createdAt',...
+     * @param string $order Must be 'ASC' or 'DESC'. Default: 'DESC'
+     * @return Product[] Array of Product object to which we add a 'sales' property (Product::sales)
+     * @return array 
      */
-    public function FindMostViewed(int $maxResults = 99999)
+    public function findForCollection(?Category $category = null, $maxResults = null, ?string $orderBy = null, ?string $order = 'ASC'): array
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.views > 0')
-            ->orderBy('p.views', 'DESC')
+        if(!$orderBy) $orderBy = $this->adminSettingService->getValue('collectionFilterDefault');
+        
+        $query = $this->createQueryBuilder('p');
+        if($category) $query->andWhere('p.category = '.$category->getId());
+        if($orderBy) $query->orderBy('p.'.$orderBy, $order);
+        return $query
             ->setMaxResults($maxResults)
             ->getQuery()
-            ->getResult()
-        ;
-    }
-
-    /**
-     * Get the most recent products added to the shop (sorted by dateTime)
-     * @return Product[] Returns an array of Product objects
-     */
-    public function FindMostRecent(int $maxResults = 99999)
-    {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.createdAt', 'DESC')
-            ->setMaxResults($maxResults)
-            ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
     /*

@@ -12,12 +12,14 @@
     {% include "_parts/_icon-cards.html.twig" with {
         style: {width:3, bg:"primary", text:"white"},
         cards:{
-            1:{icon:"fas fa-plus", title: "New product", link:path("product_create")},
-            2:{icon:"fas fa-plus", title: "New category", link:path("category_create")},
-            3:{icon:"fas fa-edit", title: "Edit a product", link:path("admin_products")},
-            4:{icon:"fas fa-edit", title: "Edit a category", link:path("admin_categories")},
-            5:{icon:"fas fa-users", title: "Users", link:path("admin_users")},
-            6:{icon:"fas fa-chart-line", title: "Statistics", link:path("admin_stats")},
+            0:{icon:"fas fa-shopping-bag", title: "Orders", link:path("admin_purchases")},
+            5:{icon:"fas fa-edit", title: "Products", link:path("admin_products")},
+            10:{icon:"fas fa-edit", title: "Categories", link:path("admin_categories")},
+            15:{icon:"fas fa-users", title: "Users", link:path("admin_users")},
+            20:{icon:"fas fa-cog", title: "Settings", link:path("admin_settings")},
+            30:{icon:"fas fa-chart-line", title: "Statistics", link:path("admin_stats")},
+            40:{icon:"fas fa-truck-loading", title: "Delivery options", link:path("admin_delivery")},
+            50:{icon:"fas fa-file-upload", title: "Uploads", link:path("admin_uploads")},
         }
     }%}
 {% endblock %}

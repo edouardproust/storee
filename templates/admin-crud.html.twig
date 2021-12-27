@@ -1,0 +1,13 @@
+{% extends "default.html.twig" %}
+
+{% block h1 %}
+    <div class="d-flex justify-content-between">
+        <h1>{{ title }}</h1>
+        <div>
+            <a href="{% block crud_add_link %}{% endblock %}" class="btn btn-primary mb-3">
+                {% block crud_add_icon %}<i class="fas fa-plus me-2"></i>{% endblock %}
+                {% block crud_add_text %}{% endblock %}
+            </a>
+        </div>
+    </div>
+{% endblock %}

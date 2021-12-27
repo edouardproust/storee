@@ -3,10 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\PrePersist;
-use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -49,13 +46,6 @@ class Product
     private $shortDescription;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(message="A main image must be defined.")
-     * @Assert\Url(message="Main picture must be a valid URL.")
-     */
-    private $mainImage;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="products")
      * @Assert\NotBlank(message="You have to choose a category", groups={"edit"})
      */
@@ -75,6 +65,17 @@ class Product
      * @ORM\Column(type="integer", nullable=true)
      */
     private $views = 0;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Upload::class, inversedBy="products")
+     */
+    private $mainImage;
+
+    /**
+     * Total of units sold
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $purchases;
 
     public function __construct()
     {
@@ -151,18 +152,6 @@ class Product
         return $this;
     }
 
-    public function getMainImage(): ?string
-    {
-        return $this->mainImage;
-    }
-
-    public function setMainImage(?string $mainImage): self
-    {
-        $this->mainImage = $mainImage;
-
-        return $this;
-    }
-
     public function getCategory(): ?Category
     {
         return $this->category;
@@ -227,6 +216,48 @@ class Product
         $this->views = $views;
 
         return $this;
+    }
+
+    public function getMainImage(): ?Upload
+    {
+        return $this->mainImage;
+    }
+
+    public function setMainImage(?Upload $mainImage): self
+    {
+        $this->mainImage = $mainImage;
+
+        return $this;
+    }
+
+    /**
+     * Get total of units sold 
+     * @return null|int Total number of units sold */
+    public function getPurchases(): ?int
+    {
+        return $this->purchases;
+    }
+
+
+    /**
+     * Set total of units sold
+     * @param null|int $unitsSold Total number of units sold
+     * @return Product 
+     */
+    public function setPurchases(?int $unitsSold): self
+    {
+        $this->purchases = $unitsSold;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed $quantity Units sold for this purchase
+     * @return void 
+     */
+    public function addPurchase($quantity): void
+    {
+        $this->purchases += $quantity;
     }
     
 }

@@ -5,7 +5,6 @@ namespace App\EventListener;
 use App\Event\ProductViewEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class ProductViewCountSubscriber implements EventSubscriberInterface

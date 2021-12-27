@@ -1,0 +1,51 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Settings" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Settings"}
+        }
+    }%}
+{% endblock %}
+
+{% block content %}
+    {{ form_start(settingsForm) }}
+    <div class="row">
+        <div class="col-md-6">
+    
+            <h3 class="mt-3">General</h3>
+            {{ form_row(settingsForm.siteName) }}
+            {% include "_parts/_form-image.html.twig" with {input:settingsForm.logo, img:images.logo} %}
+            {{ form_row(settingsForm.storeEmail) }}
+            {{ form_row(settingsForm.storeEmailExpeditor) }}
+            {{ form_row(settingsForm.colorMain) }}
+            {{ form_row(settingsForm.colorMainHover) }}
+
+            <h3>Homepage sections</h3>
+            {% include "_parts/_form-image.html.twig" with {input:settingsForm.homeHero, img:images.homeHero} %}
+            {{ form_row(settingsForm.homeHeroPosition) }}
+            {{ form_row(settingsForm.homeHeroLayerOpacity) }}
+            {{ form_row(settingsForm.homeCollectionItemsNumber) }}
+            {{ form_row(settingsForm.homePopularProductsCriteria) }}
+
+            <h3>Store</h3>
+            {{ form_row(settingsForm.collectionItemsPerPage) }}
+            {{ form_row(settingsForm.collectionItemsPerRow) }}
+            {{ form_row(settingsForm.directCheckout) }}
+        </div>
+        <div class="col-md-6">
+            <div class="py-3 sticky">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Save changes
+                </button>
+            </div>
+            
+        </div>
+    </div>
+    
+    {{ form_end(settingsForm) }}
+    
+{% endblock %}

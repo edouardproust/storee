@@ -1,0 +1,26 @@
+<div class="mb-4 clearfix">
+    <div class="float-end">
+        <select name="collectionFilter" class="form-select" id="collectionFilterSelect">
+            {% for value, name in collectionFilterOptions(collection) %}
+                {% if collection.filter is same as value %}
+                    {% set selected = 'selected' %}
+                {% else %}
+                    {% set selected = '' %}
+                {% endif %}
+                <option value="{{ value }}" {{ selected }}>{{ name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+{% set route = app.request.attributes.get('_route') %}
+{% set params = app.request.attributes.get('_route_params') %}
+
+<script>
+    const filterSelect = document.querySelector('#collectionFilterSelect');
+    filterSelect.addEventListener('change', (e) => {
+        let url = '{{ path(route, {slug: params.slug ?? null, page: 1, orderBy: "filter_value"}) }}'
+        url = url.replace("filter_value", filterSelect.value)
+        document.location.href = url
+    })
+</script>

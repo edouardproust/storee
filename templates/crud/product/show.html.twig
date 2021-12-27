@@ -1,0 +1,37 @@
+{% extends 'no-title.html.twig' %}
+
+{% set title = product.name %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:  {
+            0:{name:product.category.name, url:path("category", {slug:product.category.slug})},
+            1:{name:product.name}
+        }
+    }%}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <img src="{{ product.mainImage|uploadedImgUrl }}" alt="{{product.name}}" class="img-fluid w-100">
+        </div>
+        <div class="col">
+            <div class="sticky">
+                <h1 class="mb-2">{{product.name}}</h1>
+                <p><b>{{product.priceWithCurrency}}</b></p>
+                <p>{{product.shortDescription}}</p>
+                <a href="{{ path("cart_plus", {id:product.id}) }}" class="btn btn-primary">Add to cart</a>
+            </div>
+        </div>
+    </div>
+    <div class="my-5">
+        {% include "_parts/_tabs.html.twig" with {
+            tabs:  {
+                0: {name: "Description", content: "Description content"},
+                1: {name: "Reviews", content: "Reviews content"},
+                2: {name: "Delivery", content: "Delivery content"}
+            }
+        } %}
+    </div>
+{% endblock %}

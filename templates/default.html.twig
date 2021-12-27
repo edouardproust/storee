@@ -16,7 +16,7 @@
         {% block breadcrumbs %}{% endblock %}
 
         {% if title is not same as setting('siteName') %}
-            <h1>{{ title }}</h1>
+            {% block h1 %}<h1>{{ title }}</h1>{% endblock %}
         {% endif %}
 
         {% block content %}{% endblock %}

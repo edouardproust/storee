@@ -1,0 +1,52 @@
+{% extends 'admin-crud.html.twig' %}
+
+{% set title = "Uploads" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Categories"}
+        }
+    }%}
+{% endblock %}
+
+{% block crud_add_icon %}<i class="fas fa-recycle me-2"></i>{% endblock %}
+{% block crud_add_text %}Purge storage{% endblock %}
+{% block crud_add_link %}{{ path("admin_uploads_purge") }}{% endblock %}
+
+{% block content %}
+    {% if collection.items is empty %}
+        <p>The storage is empty. Upload files to see them appear here.</p>
+    {% else %}
+        <table class="table align-middle">
+            <tr>
+                <th scope="col" class="admin-collection-img-md">Preview</th>
+                <th scope="col">Name</th>
+                <th scope="col">Uploaded on</th>
+                <th scope="col">Options</th>
+            </tr>
+            {% if collection.items is not empty %}
+                {% for upload in collection.items %}
+                    <tr>
+                        <td>
+                            <a href="{{ upload.url }}">
+                            {% if upload|fileIcon is same as 'img' %}
+                                <img src="{{ upload.url }}" class="admin-collection-img-md">
+                            {% else %}
+                                <i class="fas fa-{{ upload|fileIcon }} fa-5x"></i>
+                            {% endif %}
+                            </a>
+                        </td>
+                        <td class="small">{{ upload.name }}</td>
+                        <td>{{ upload.createdAt|date("m-d-Y") }}</td>
+                        <td>
+                            <a href="{{ path('upload_delete',{id:upload.id}) }}" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
+    {% endif %}
+    {% include "_parts/_collection-pagination.html.twig" %}
+{% endblock %}

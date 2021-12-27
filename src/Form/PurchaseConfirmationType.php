@@ -5,14 +5,13 @@ namespace App\Form;
 use App\Entity\Purchase;
 use App\Entity\PaymentMethod;
 use App\Entity\DeliveryMethod;
-use App\Form\Type\CountryType;
 use App\Entity\DeliveryCountry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints as Assert;
 use App\Form\DataTransformer\CountryToStringTransformer;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
@@ -31,12 +30,7 @@ class PurchaseConfirmationType extends AbstractType
         $builder
             ->add('firstname', TextType::class, [
                 'attr' => ['placeholder' => 'Firstname'],
-                'row_attr' => ['class' => 'form-floating mb-3'],
-                'constraints' => [
-                    new Assert\NotBlank(null, "Firstname is mandatory."),
-                    new Assert\Length(null, 2, 255, null, null, null, "Firstname must must be at least {{ limit }} characters long.", "Firstname must be maximun {{ limit }} characters long.")
-                ],
-                'required' => false
+                'row_attr' => ['class' => 'form-floating mb-3']
             ])
             ->add('lastname', TextType::class, [
                 'attr' => ['placeholder' => 'Lastname'],
@@ -58,11 +52,10 @@ class PurchaseConfirmationType extends AbstractType
             ->add('country', EntityType::class, [
                 'class' => DeliveryCountry::class,
                 'choice_label' => 'name',
-                'required' => false,
                 'placeholder' => false,
                 'row_attr' => ['class' => 'form-floating mb-3']
             ])
-            ->add('email', TextType::class, [
+            ->add('email', EmailType::class, [
                 'attr' => ['placeholder' => 'Email'],
                 'row_attr' => ['class' => 'form-floating mb-3'],
                 'help' => "To receive delivery updates."
@@ -73,7 +66,6 @@ class PurchaseConfirmationType extends AbstractType
                 'help' => "For the delivery person."
             ])
             ->add('password', PasswordType::class, [
-                'required' => false,
                 'label' => 'Password (Optional)',
                 'attr' => ['placeholder' => 'Password (Optional)'],
                 'row_attr' => ['class' => 'form-floating mb-3'],
@@ -92,7 +84,9 @@ class PurchaseConfirmationType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => false,
                 'row_attr' => ['class' => 'form-floating mb-3']
-            ]);
+            ])
+            //->setRequired(false); // 'novalidate' parameter added to <form> tag in the twig template
+        ;
         
         $builder->get('country')
             ->addModelTransformer($this->transformer);

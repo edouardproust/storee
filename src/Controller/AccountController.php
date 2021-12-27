@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AccountController extends AbstractController
@@ -64,26 +63,4 @@ class AccountController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/account/delete-order/{id}", name="account_delete_order")
-     */
-    public function deletePurchase($id): RedirectResponse
-    {
-        $purchase = $this->purchaseRepository->find($id);
-        $this->em->remove($purchase);
-        $this->em->flush();
-        $this->addFlash('success', 'This order has been cancelled.');
-
-        return $this->redirectToRoute('account_show');
-    }
-
-        /**
-     * @Route("/account/edit-order/{id}", name="account_edit_order")
-     */
-    public function editOrder($id): RedirectResponse
-    {
-        return $this->redirectToRoute('checkout_confirmation', [
-            'id' => $id
-        ]);
-    }
 }

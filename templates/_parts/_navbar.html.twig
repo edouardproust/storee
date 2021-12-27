@@ -2,10 +2,10 @@
     <nav class="navbar navbar-expand-md">
         <div class="container-fluid">
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-3">
-                {% if setting('logo') is null %}
+                {% if settingImage('logo') is empty %}
                     <span class="logo-text">{{ setting('siteName') }}</span>
                 {% else %}
-                    <img src="{{setting('logo') }}" height="30" alt="logo-storee-online-store">
+                    <img src="{{ settingImage('logo') }}" height="30" alt="logo-storee-online-store">
                 {% endif %}
             </a>
             <div class="me-auto">

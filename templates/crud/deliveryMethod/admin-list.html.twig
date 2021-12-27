@@ -1,0 +1,62 @@
+{% extends 'admin-crud.html.twig' %}
+
+{% set title = "Delivery Options" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Delivery options"}
+        }
+    }%}
+{% endblock %}
+
+{% block crud_add_text %}Create new Method{% endblock %}
+{% block crud_add_link %}{# {{ path("delivery_create") }} #}{% endblock %}
+
+{% block content %}
+    <h3>Methods</h3>
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th class="w-60">Countries</th>
+                <th>Options</th>
+            </tr>
+        <thead>
+        <tbody>
+            {% for dm in deliveryMethods %}
+            <tr>
+                <td>{{ dm.name }}</td>
+                <td>{{ dm.price|price }}</td>
+                <td class="small">
+                    {% for country in dm.countries %}
+                        {{ country.name  }} | 
+                    {% endfor %}
+                </td>
+                <td>
+                    <a href="{# {{path("delivery_edit",{id:dm.id})}} #}" class="btn btn-sm btn-primary mr-2">Edit</a>
+                    <a href="{# {{path("delivery_delete",{id:dm.id})}} #}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {# <h3>Countries</h3>
+    <table class="table align-middle">
+        <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Options</th>
+        </tr>
+        {% for country in countries %}
+            <tr>
+                <td>{{ country.name }}</td>
+                <td>{{ country.code }}</td>
+                <td>Comming soon</td>
+            </tr>
+        {% endfor %}
+    </table> #}
+{% endblock %}

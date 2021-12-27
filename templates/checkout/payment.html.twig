@@ -41,7 +41,7 @@
 
                 <div class="mt-4">
                     <div class="small text-muted">Products: {{ productsTotal|price }}</div>
-                    <div class="small text-muted">Delivery: {{ purchase.deliveryMethod.price|price }}</div>
+                    <div class="small text-muted">Shipping: {{ purchase.deliveryMethod.price|price }}</div>
                     <b>Total:</b> {{ purchase.total|price }}
                 </div>
                 <button id="submit" class="btn btn-primary btn-lg my-4 w-100">
@@ -62,25 +62,29 @@
 
     <h3>Order details</h3>
     <table class="table">
-        <tr>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Total</th>
-        </tr>
-        {% for item in purchase.purchaseItems %}
+        <thead>
             <tr>
-                <td>{{item.product.name}}</td>
-                <td><span class="mx-2">{{item.quantity}}</span></td>
-                <td>{{ item.total|price }}</td>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Total</th>
             </tr>
-        {% endfor %}
-        <tr>
-            <th colspan=2>Delivery</th>
-            <th>{{ purchase.deliveryMethod.price|price }}</th>
-        </tr>
-        <tr>
-            <th colspan=2>Total</th>
-            <th>{{ purchase.total|price }}</th>
-        </tr>
+        </thead>
+        <tbody>
+            {% for item in purchase.purchaseItems %}
+                <tr>
+                    <td>{{item.product.name}}</td>
+                    <td><span class="mx-2">{{item.quantity}}</span></td>
+                    <td>{{ item.total|price }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <th colspan=2>Shipping</th>
+                <th>{{ purchase.deliveryMethod.price|price }}</th>
+            </tr>
+            <tr>
+                <th colspan=2>Total</th>
+                <th>{{ purchase.total|price }}</th>
+            </tr>
+        </tbody>
     </table>
 {% endblock %}

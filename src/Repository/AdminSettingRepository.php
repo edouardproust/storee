@@ -34,18 +34,4 @@ class AdminSettingRepository extends ServiceEntityRepository
         ;
     }
 
-    /**
-     * Get the value of an AdminSetting, based on slug
-     * @var string $slug The slug of the setting
-     * @return mixed|null The type of setting's value
-     */
-    public function get(string $slug)
-    {
-        $setting = $this->getOne($slug);
-        if(!$setting) {
-            return null;
-        }
-        return $setting->getValue();
-    }
-
 }

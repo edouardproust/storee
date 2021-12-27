@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\PurchaseRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PurchaseRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=PurchaseRepository::class)
@@ -13,8 +14,11 @@ use Doctrine\ORM\Mapping as ORM;
 class Purchase
 {
     
-    const STATUS_PENDING = "PENDING";
-    const STATUS_PAID = "PAID";
+    const STATUS_PENDING = "pending";
+    const STATUS_PAID = "paid";
+    const STATUS_PREPARATION = 'in preparetion';
+    const STATUS_SENT = 'sent';
+    const STATUS_CLOSED = 'closed';
 
     /**
      * @ORM\Id
@@ -45,41 +49,57 @@ class Purchase
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=3, max=255)
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=3, max=255)
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=3, max=255)
      */
     private $street;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=255)
      */
     private $postcode;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=2, max=255)
      */
     private $city;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email(message="The email '{{ value }}' is not a valid email."),
+     * @Assert\Length(min=7, max=255)
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\NotBlank()
+     * @Assert\Length(min=6, max=255)
      */
     private $phone;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(min=8, max=255)
      */
     private $password;
 
@@ -95,16 +115,19 @@ class Purchase
 
     /**
      * @ORM\ManyToOne(targetEntity=DeliveryMethod::class)
+     * @Assert\NotBlank()
      */
     private $deliveryMethod;
 
     /**
      * @ORM\ManyToOne(targetEntity=PaymentMethod::class, inversedBy="purchases")
+     * @Assert\NotBlank()
      */
     private $paymentMethod;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $country;
 

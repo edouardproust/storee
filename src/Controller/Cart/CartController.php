@@ -26,7 +26,7 @@ class CartController extends CartAbstractController
      */
     public function show(): Response
     {
-        return $this->render('cart/show.html.twig', [
+        return $this->render('checkout/cart.html.twig', [
             'cart' => $this->cartService->getDetailedCart(),
             'total' => $this->cartService->getTotal()
         ]);

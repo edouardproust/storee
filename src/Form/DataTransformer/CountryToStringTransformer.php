@@ -2,7 +2,6 @@
 
 namespace App\Form\DataTransformer;
 
-use Exception;
 use App\Entity\DeliveryCountry;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;

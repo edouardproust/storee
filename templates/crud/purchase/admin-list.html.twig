@@ -1,0 +1,44 @@
+{% extends 'default.html.twig' %}
+
+{% set title = "Orders" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Orders"}
+        }
+    }%}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script defer src="/js/snippets/clickable-row.js"></script>
+{% endblock %}
+
+{% block content %}
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Nr.</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Recipient</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in collection.items %}
+                <tr class='clickable-row' href='{{ path('purchase',{id:purchase.id}) }}'>
+                    <td class="small text-muted">#{{ purchase.id }}</td>
+                    <td>{{ purchase.total|price }}</td>
+                    <td>{{ purchase.createdAt|date("m-d-Y") }}</td>
+                    <td>{{ purchase.firstName }} {{ purchase.lastName }}</td>
+                    <td><b>{{ purchase.status|lower|capitalize }}</b></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <tbody>
+    {% include "_parts/_collection-pagination.html.twig" %}
+{% endblock %}

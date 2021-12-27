@@ -1,0 +1,16 @@
+<div class="mb-3">
+    {{ form_label(input) }}
+    {% if img %}
+        {% if img.url|fileExists or img.url|strpos('picsum.photos') %}
+            <div class="mb-2">
+                <img src="{{ img.url }}" style="max-width:200px">
+                {% if img.deleteUrl is defined %}
+                    <a href="{{ img.deleteUrl }}" class="btn btn-sm btn-outline-danger"><i class="fas fa-times"></i></a>
+                {% endif %}
+            </div>
+        {% endif %}
+    {% endif %}
+    {{ form_widget(input) }}
+    {{ form_errors(input) }}
+    {{ form_help(input) }}
+</div>

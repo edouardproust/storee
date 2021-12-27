@@ -27,10 +27,10 @@ class AdminSetting
      */
     private $value;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    /**
+     * @ORM\ManyToOne(targetEntity=Upload::class, inversedBy="adminSettings")
+     */
+    private $upload;
 
     public function getSlug(): ?string
     {
@@ -44,14 +44,26 @@ class AdminSetting
         return $this;
     }
 
-    public function getValue(): ?string
+    public function getValue()
     {
-        return json_decode($this->value);
+        return unserialize($this->value);
     }
 
-    public function setValue(?string $value): self
+    public function setValue($value): self
     {
-        $this->value = json_encode($value);
+        $this->value = serialize($value);
+
+        return $this;
+    }
+
+    public function getUpload(): ?Upload
+    {
+        return $this->upload;
+    }
+
+    public function setUpload(?Upload $upload): self
+    {
+        $this->upload = $upload;
 
         return $this;
     }

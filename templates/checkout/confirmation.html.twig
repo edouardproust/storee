@@ -3,7 +3,7 @@
 {% set title = "Checkout" %}
 
 {% block content %}
-    {{ form_start(formCheckout, {'attr': {'id': 'payment-form'}}) }}
+    {{ form_start(formCheckout, {attr: {id: 'payment-form', novalidate:''}}) }}
         <div class="row">
             <div class="col-md-7 pe-md-5">
 
@@ -61,7 +61,7 @@
 
                 <div class="sticky">
 
-                    <h3 class="mt-0">Delivery</h3>
+                    <h3 class="mt-0">Shipping</h3>
                     {{ form_row(formCheckout.deliveryMethod) }}
 
                     <h3 class="mt-0">Payment</h3>
@@ -81,21 +81,25 @@
 
     <h3>Order details</h3>
     <table class="table">
-        <tr>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Total</th>
-        </tr>
-        {% for item in cart %}
+        <thead>
             <tr>
-                <td>{{item.product.name}}</td>
-                <td><span class="mx-2">{{item.quantity}}</span></td>
-                <td>{{ item.total|price }}</td>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Total</th>
             </tr>
-        {% endfor %}
-        <tr>
-            <th colspan=2>Total <span class="small">(without delivery)</span></th>
-            <th>{{ total|price }}</th>
-        </tr>
+        </thead>
+        <tbody>
+            {% for item in cart %}
+                <tr>
+                    <td>{{item.product.name}}</td>
+                    <td><span class="mx-2">{{item.quantity}}</span></td>
+                    <td>{{ item.total|price }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <th colspan=2>Total <span class="small">(without shipping)</span></th>
+                <th>{{ total|price }}</th>
+            </tr>
+        </tbody>
     </table>
 {% endblock %}

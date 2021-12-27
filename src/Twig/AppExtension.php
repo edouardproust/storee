@@ -2,36 +2,56 @@
 
 namespace App\Twig;
 
+use App\App\Entity\Collection;
+use App\App\Path;
 use Twig\TwigFilter;
+use App\Entity\Upload;
 use Twig\TwigFunction;
-use App\App\Helper\UrlHelper;
+use App\App\Helper\PriceHelper;
+use App\App\Helper\TemplateHelper;
+use App\App\Service\UploadService;
 use Twig\Extension\AbstractExtension;
 use App\Repository\CategoryRepository;
-use App\Repository\AdminSettingRepository;
-use InvalidArgumentException;
-use RuntimeException;
-use Doctrine\ORM\NonUniqueResultException;
+use App\App\Service\AdminSettingService;
+use App\App\Service\CollectionService;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\File\File;
 
 class AppExtension extends AbstractExtension
 {
 
-    /** @var AdminSettingRepository */
-    private $settings;
+    /** @var UploadService */
+    private $uploadService;
 
     /** @var CategoryRepository */
     private $categoryRepository;
 
-    public function __construct(AdminSettingRepository $adminSettingRepository, CategoryRepository $categoryRepository)
+    /** @var AdminSettingService */
+    private $adminSettingService;
+
+    /** @var Path */
+    private $path;
+
+    /** @var CollectionService */
+    private $collectionService;
+
+    public function __construct(UploadService $uploadService, CategoryRepository $categoryRepository, Path $path, AdminSettingService $adminSettingService, CollectionService $collectionService)
     {
-        $this->settings = $adminSettingRepository;
+        $this->uploadService = $uploadService;
         $this->categoryRepository = $categoryRepository;
+        $this->path = $path;
+        $this->adminSettingService = $adminSettingService;
+        $this->collectionService = $collectionService;
     }    
     
     public function getFunctions()
     {
         return [
-            new TwigFunction('setting', [$this, 'getSetting']),
-            new TwigFunction('categories', [$this, 'getAllCategories'])
+            new TwigFunction('setting', [$this, 'getSettingValue']),
+            new TwigFunction('settingImage', [$this, 'getSettingImage']),
+            new TwigFunction('categories', [$this, 'getAllCategories']),
+            new TwigFunction('collectionFilterOptions', [$this, 'getCollectionFilterOptions']),
+            new TwigFunction('collListThLink', [$this, 'getCollectionAdminListThLink'])
         ];
     }
 
@@ -39,18 +59,33 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('price', [$this, 'formatPrice']),
-            new TwigFilter('replaceIfNotFound', [$this, 'replaceFileIfNotFound']),
+            new TwigFilter('fileExists', [$this, 'fileExists']),
+            new TwigFilter('fileIcon', [$this, 'getFileTypeIcon']),
+            new TwigFilter('uploadedImgUrl', [$this, 'getUploadedImageUrl']),
+            new TwigFilter('strpos', [$this, 'strpos']),
+            new TwigFilter('extract', [$this, 'extract'])
         ];
     }
-
+    
     /**
-     * Show value of an AdminSetting object, based on its slug
+     * Get value of an AdminSetting object, based on its slug
      * @param string $settingSlug The slug of the setting
      * @return null|string 
      */
-    public function getSetting(string $slug): ?string
+    public function getSettingValue(string $slug): ?string
     {
-        return $this->settings->get($slug);
+        return $this->adminSettingService->getValue($slug);
+    }
+
+    /**
+     * Get the url of an admin setting Upload object, based on its slug
+     * @param string $settingSlug The slug of the setting
+     * @return null|string The Upload object's 'url' field value
+     */
+    public function getSettingImage(string $slug): ?string
+    {
+        $upload = $this->adminSettingService->getUpload($slug);
+        return $upload ? $this->adminSettingService->getUpload($slug)->getUrl() : null;
     }
 
     public function getAllCategories(): array
@@ -60,42 +95,97 @@ class AppExtension extends AbstractExtension
 
     public function formatPrice($cents, $currency = 'EUR', $decimalSep = '.', $thousandsSep = ',', $decimals = 2): string
     {
-        $price = $cents/100;
-        $formatedPrice = number_format($price, $decimals, $decimalSep, $thousandsSep);
-        switch($currency) {
-            case "EUR":
-                $withCurrency = $formatedPrice.'€';
-                break;
-            case "USD":
-                $withCurrency = '$'.$formatedPrice;
-            default:
-                $withCurrency = $formatedPrice;
-        }
-        return $withCurrency;
+        return PriceHelper::format($cents, $currency, $decimalSep, $thousandsSep, $decimals);
+    }
+
+    /** 
+     * @return array [ value => label ]
+     */
+    public function getCollectionFilterOptions(): array
+    {
+        return $this->adminSettingService->getValue('collectionFilterOptions');
+    }
+
+    public function getCollectionAdminListThLink(string $label, string $orderBy, Request $request, Collection $collection): string
+    {
+        return $this->collectionService->getCollectionAdminListThLink($label, $orderBy, $request, $collection);
     }
 
     /**
-     * Warning: slows down the site a lot if used several times on the same page (ie. for a product collection)
-     * @param string $fileUrl 
-     * @param string $fileType 
-     * @param null|string $defaultFile 
+     * @param string|Upload $file 
+     * @return bool 
+     */
+    public function fileExists($file)
+    {
+        return $this->uploadService->checkIfFileExists($file);
+    }
+
+    /**
+     * Return file type in order to display icons for each format (with font-awesome icons) or a preview (if file is an image)
+     * @param Upload $file 
+     * @return bool 
+     */
+    public function getFileTypeIcon(Upload $file): ?string
+    {
+        if($file) {
+            $fileObj = new File($this->path->ROOT() . $file->getUrl());
+            $extension = $fileObj->guessExtension();
+            switch($extension) {
+                case 'jpg': return 'img'; break;
+                case 'jpeg': return 'img'; break;
+                case 'png': return 'img'; break;
+                case 'webp': return 'img'; break;
+                case 'gif': return 'img'; break;
+                case 'txt': return 'file-alt'; break;
+                case 'pdf': return 'file-pdf'; break;
+                case 'csv': return 'file-csv'; break;
+                case 'xls': return 'file-excel'; break;
+                case 'xlsx': return 'file-excel'; break;
+                case 'js': return 'file-code'; break;
+                case 'css': return 'file-code'; break;
+                case 'scss': return 'file-code'; break;
+                case 'php': return 'file-code'; break;
+                case 'html': return 'file-code'; break;
+                case 'htm': return 'file-code'; break;
+                case 'twig': return 'file-code'; break;
+                case 'mpeg': return 'file-video'; break;
+                case 'avi': return 'file-video'; break;
+                case 'mp3': return 'file-audio'; break;
+                default: return 'file'; break;
+            }
+        }
+    }
+
+    /**
+     * @param Upload|string|null $upload Upload for a manually uploaded image. String for a setting or a fixture image. If null, method will return a default image placeholder.
      * @return null|string 
      */
-    public function replaceFileIfNotFound(string $fileUrl, string $fileType = 'image', ?string $defaultFile = null): ?string
+    public function getUploadedImageUrl($upload)
     {
-        if(UrlHelper::isReturningError($fileUrl)) {
-            if(!$defaultFile) {
-                switch($fileType) {
-                    case 'image':
-                        return '/img/image-placeholder.png';
-                        break;
-                    default:
-                        return null;
-                }
-            }
-            return $defaultFile;
-        }
-        return $fileUrl;
+        return $this->uploadService->getUploadedImageUrl($upload);
+    }
+
+    /**
+     * Tells if the string (haystack) contains another string (needle)
+     * @param string $haystack Autofilled by twig 
+     * @param string $needle The string to search for
+     * @return bool 
+     */
+    public function strpos($haystack, string $needle): bool
+    {
+        if(strpos($haystack, $needle)) return true;
+        return false;
+    }
+
+    /**
+     * @param string $text Autofilled by twig
+     * @param int int $maxChars How many characters long the extract should be?
+     * @param string|null $delimiter The delimiter that ends the extract if the text is trimmed. Default: '...'
+     * @return void 
+     */
+    public function extract($text, int $maxChars = 120, ?string $delimiter = '...')
+    {
+        return TemplateHelper::extract($text, $maxChars, $delimiter);
     }
 
 }

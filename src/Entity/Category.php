@@ -23,7 +23,12 @@ class Category
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="The category name cannot be blank.")
-     * @Assert\Length(min=3, minMessage="The category name must have {{ limit }} characters or more.")
+     * @Assert\Length(
+     *    min=3, 
+     *    max=255, 
+     *    minMessage="The category name must have {{ limit }} characters or more.",
+     *    maxMessage="The category name must be maximum {{ limit }} characters long."
+     * )
      */
     private $name;
 
@@ -37,6 +42,12 @@ class Category
      * @ORM\OrderBy({"createdAt"="DESC"})
      */
     private $products;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Assert\Length(min=3, minMessage="The category name must have {{ limit }} characters or more.")
+     */
+    private $description;
 
     public function __construct()
     {
@@ -98,6 +109,18 @@ class Category
                 $product->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }

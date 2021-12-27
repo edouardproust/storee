@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\App\Service\AdminSettingService;
 use App\App\Service\EmailService;
 use Symfony\Component\Mime\Address;
 use Psr\Container\ContainerInterface;
@@ -18,17 +19,17 @@ class ContactFormSubmittedSubscriber implements EventSubscriberInterface
     /** @var MailerInterface */
     private $mailer;
     
-    /** @var AdminSettingRepository */
-    private $settings;
+    /** @var AdminSettingService */
+    private $adminSettingService;
 
     /** @var EmailService */
     private $emailService;
     
 
-    public function __construct(MailerInterface $mailer, AdminSettingRepository $adminSettingRepository, EmailService $emailService)
+    public function __construct(MailerInterface $mailer, AdminSettingService $adminSettingService, EmailService $emailService)
     {
         $this->mailer = $mailer;
-        $this->settings = $adminSettingRepository;
+        $this->adminSettingService = $adminSettingService;
         $this->emailService = $emailService;
     }
 
@@ -42,12 +43,12 @@ class ContactFormSubmittedSubscriber implements EventSubscriberInterface
     public function sendEmail(ContactFormSubmittedEvent $event): void
     {
         $message = $event->getContactMessage();
-        $s = $this->settings;
+        $s = $this->adminSettingService;
         try {
             $email = (new TemplatedEmail)
                 ->to(new Address($message['email'], $message['fullname']))
-                ->from(new Address($s->get('contactEmail'), $s->get('contactName')))
-                ->subject('New contact message from ' . $s->get('siteName'))
+                ->from(new Address($s->getValue('storeEmail'), $s->getValue('storeEmailExpeditor')))
+                ->subject('New contact message from ' . $s->getValue('siteName'))
                 ->htmlTemplate('emails/contact.html.twig')
                 ->context([
                     'contactMessage' => $message

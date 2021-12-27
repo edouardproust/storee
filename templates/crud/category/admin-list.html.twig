@@ -1,0 +1,39 @@
+{% extends 'admin-crud.html.twig' %}
+
+{% set title = "Categories" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Categories"}
+        }
+    }%}
+{% endblock %}
+
+{% block crud_add_text %}Create new Category{% endblock %}
+{% block crud_add_link %}{{ path("category_create") }}{% endblock %}
+
+{% block content %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            <tr>
+                <td>
+                    <a href="{{ path("category", {slug:category.slug}) }}" target="_blank">{{category.name}}</a>
+                </td>
+                <td>
+                    <a href="{{path("category_edit",{id:category.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
+                    <a href="{{path("category_delete",{id:category.id})}}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

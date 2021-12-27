@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use App\App\Service\AdminSettingService;
 use Exception;
 use App\App\Service\EmailService;
 use App\Event\PurchaseSuccessEvent;
@@ -20,14 +21,14 @@ class PurchaseSuccessEmailSubscriber extends EmailService implements EventSubscr
     /** @var EmailService */
     private $emailService;
 
-    /** @var AdminSettingRepository */
-    private $settings;
+    /** @var AdminSettingService */
+    private $adminSettingService;
 
-    public function __construct(MailerInterface $mailer, EmailService $emailService, AdminSettingRepository $adminSettingRepository)
+    public function __construct(MailerInterface $mailer, EmailService $emailService, AdminSettingService $adminSettingService)
     {
         $this->mailer = $mailer;
         $this->emailService = $emailService;
-        $this->settings = $adminSettingRepository;
+        $this->adminSettingService = $adminSettingService;
     }
 
     public static function getSubscribedEvents()
@@ -40,11 +41,11 @@ class PurchaseSuccessEmailSubscriber extends EmailService implements EventSubscr
     public function sendEmail(PurchaseSuccessEvent $purchaseSuccessEvent): void
     {
         $purchase = $purchaseSuccessEvent->getPurchase();
-        $s = $this->settings;
+        $s = $this->adminSettingService;
         try {
             $email = (new TemplatedEmail)
                 ->to(new Address($purchase->getEmail(), $purchase->getFirstname() . ' ' . $purchase->getLastname()))
-                ->from(new Address($s->get('contactEmail'), $s->get('contactName')))
+                ->from(new Address($s->getValue('storeEmail'), $s->getValue('storeEmailExpeditor')))
                 ->subject('Order nr. ' . $purchase->getId() . ' confirmed' )
                 ->htmlTemplate('emails/purchase-success.html.twig')
                 ->context([

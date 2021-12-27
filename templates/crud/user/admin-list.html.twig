@@ -1,0 +1,43 @@
+{% extends 'admin-crud.html.twig' %}
+
+{% set title = "Users" %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+        links:{ 
+            0:{name:"Admin", url:path("admin")},
+            1:{name:"Users"}
+        }
+    }%}
+{% endblock %}
+
+{% block crud_add_text %}Create new User{% endblock %}
+{% block crud_add_link %}{# {{ path("user_create") }} #}{% endblock %}
+
+{% block content %}
+    <table class="table">
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Registered on</th>
+            <th scope="col">Admin</th>
+            <th scope="col">Options</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{user.firstname}} {{user.lastname}}</td>
+            <td>{{ user.createdAt|date("m-d-Y") }}</td>
+            <td>
+                {% for role in user.roles %}
+                    {% if role is same as "ROLE_ADMIN" %}<i class="fas fa-check"></i>{% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                <a href="{{path("admin_user_edit",{id:user.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
+                {% if "ROLE_ADMIN" not in user.roles %}
+                    <a href="{{path("user_delete",{id:user.id})}}" class="btn btn-sm btn-danger">Delete</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

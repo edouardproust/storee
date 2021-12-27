@@ -2,8 +2,8 @@
 
 namespace App\Entity;
 
+use App\App\Helper\PriceHelper;
 use App\Repository\DeliveryMethodRepository;
-use App\Twig\AppExtension;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -57,7 +57,7 @@ class DeliveryMethod
 
     public function getNameWithPrice(): ?string
     {
-        $price = (new AppExtension)->formatPrice($this->price);
+        $price = PriceHelper::format($this->price);
         return $this->name . ' ('. $price . ')';
     }
 

@@ -1,0 +1,32 @@
+{% extends 'default.html.twig' %}
+
+{% set title = category.name|title %}
+
+{% block breadcrumbs %}
+    {% include "_parts/_breadcrumb.html.twig" with {
+       links: {
+           1: {name: category.name}
+       }
+   } %}
+{% endblock %}
+
+{% block content %}
+    {% if category.description is not null %}
+        <div class="lead mb-5 text-muted">{{ category.description }}</div>
+    {% endif %}
+    {% include "_parts/_collection-filter.html.twig" %}
+    <div class="row g-4">
+        {% if collection.items is not empty %}
+            {% for product in collection.items %}
+                <div class="col-md-{{ itemColWidth }}">
+                    {% include "_parts/_product-card.html.twig" with {
+                        product: product
+                    } %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>{{ emptyMessage }}</p>
+        {% endif %}
+    </div>
+    {% include "_parts/_collection-pagination.html.twig" %}
+{% endblock %}
