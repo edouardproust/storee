@@ -55,9 +55,8 @@ class CategoryController extends AbstractController
             $page,
             $orderBy
         );
-        if($page = $collection->redirect()) {
-            return $this->redirectToRoute($request->attributes->get('_route'), ['slug' => $slug, 'page' => $page]);
-        }
+        if($page = $collection->getRedirect()) return $this->redirectToRoute($request->get('_route'));
+
         return $this->render('crud/category/show.html.twig', [
             'category' => $category,
             'collection' => $collection,
@@ -125,15 +124,21 @@ class CategoryController extends AbstractController
     /**
      * Show list of categories
      * 
-     * @Route("/admin/categories", name="admin_categories")
+     * @Route("/admin/categories/{page<\d+>?1}/{orderBy?}_{order?}", name="admin_categories")
      */
-    public function adminList(): Response
+    public function adminList($page, $orderBy, $order, Request $request): Response
     {
-        $categories = $this->categoryRepository->findBy([], [
-            'name' => 'ASC'
-        ]);
+        $collection = new Collection(
+            $this->categoryRepository->findForCollection(null, $orderBy, $order),
+            $this->adminSettingService->getValue('entitiesPerAdminListPage'),
+            $this->generateUrl($request->get('_route')),
+            $page,
+            $orderBy ?? 'name',
+            $order ?? 'asc'
+        );
+        if($collection->getRedirect()) return $this->redirectToRoute($request->get('_route'));
         return $this->render('crud/category/admin-list.html.twig', [
-            'categories' => $categories
+            'collection' => $collection
         ]);
     }
 

@@ -17,19 +17,27 @@
 {% block content %}
     <table class="table">
         <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Registered on</th>
+            <th scope="col">{{ collListThLink('ID', 'id', app.request, collection)|raw }}</th>
+            <th scope="col">{{ collListThLink('Firstname', 'firstname', app.request, collection)|raw }}</th>
+            <th scope="col">{{ collListThLink('Lastname', 'lastname', app.request, collection)|raw }}</th>
+            <th scope="col">{{ collListThLink('Registered on', 'createdAt', app.request, collection)|raw }}</th>
+            <th scope="col">{{ collListThLink('City', 'city', app.request, collection)|raw }}</th>
+            <th scope="col">{{ collListThLink('Country', 'country', app.request, collection)|raw }}</th>
             <th scope="col">Admin</th>
             <th scope="col">Options</th>
         </tr>
-        {% for user in users %}
+        {% for user in collection.items %}
         <tr>
-            <td>{{user.firstname}} {{user.lastname}}</td>
+            <td class="small text-muted">{{ user.id }}</td>
+            <td>{{ user.firstname }}</td>
+            <td>{{ user.lastname }}</td>
             <td>{{ user.createdAt|date("m-d-Y") }}</td>
+            <td>{{ user.city }}</td>
+            <td>{{ user.country }}</td>
             <td>
-                {% for role in user.roles %}
-                    {% if role is same as "ROLE_ADMIN" %}<i class="fas fa-check"></i>{% endif %}
-                {% endfor %}
+                {% if "ROLE_ADMIN" in user.roles %}
+                    <i class="fas fa-check"></i>
+                {% endif %}
             </td>
             <td>
                 <a href="{{path("admin_user_edit",{id:user.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
@@ -40,4 +48,5 @@
         </tr>
         {% endfor %}
     </table>
+    {% include "_parts/_collection-pagination.html.twig" %}
 {% endblock %}

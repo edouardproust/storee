@@ -20,11 +20,11 @@
     <table class="table table-hover align-middle">
         <thead>
             <tr>
-                <th>Nr.</th>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Recipient</th>
-                <th>Status</th>
+                <th>{{ collListThLink('Nr.', 'id', app.request, collection)|raw }}</th>
+                <th>{{ collListThLink('Amount', 'total', app.request, collection)|raw }}</th>
+                <th>{{ collListThLink('Date', 'createdAt', app.request, collection)|raw }}</th>
+                <th>{{ collListThLink('Recipient', 'firstname', app.request, collection)|raw }}</th>
+                <th>{{ collListThLink('Status', 'status', app.request, collection)|raw }}</th>
             </tr>
         </thead>
         <tbody>

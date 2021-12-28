@@ -19,32 +19,26 @@ class PurchaseRepository extends ServiceEntityRepository
         parent::__construct($registry, Purchase::class);
     }
 
-    // /**
-    //  * @return Purchase[] Returns an array of Purchase objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
+    /**
+     * Get a list of purchases, based on several criterias like: the category, the limit and the order criteria.
+     * 
+     * @param ?int $maxResults Limit the number of Purchases | null for unlimited amount. Default: null
+     * @param string $orderBy Property to order by. This must be a property of the Purchase entity. Eg. 'views', 'purchases', 'createdAt',...
+     * @param string $order Must be 'ASC' or 'DESC'. Default: 'DESC'
+     * @return Purchase[] Array of Purchase object to which we add a 'sales' property (Purchase::sales)
+     * @return array 
+     */
+    public function findForCollection($maxResults = null, ?string $orderBy, ?string $order): array
+    {         
+        $orderBy = $orderBy ?? 'id';
+        $order = $order ?? 'desc';
+        
+        $query = $this->createQueryBuilder('p');
+        if($orderBy) $query->orderBy('p.'.$orderBy, $order);
+        return $query
+            ->setMaxResults($maxResults)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Purchase
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

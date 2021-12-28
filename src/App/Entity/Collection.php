@@ -3,6 +3,7 @@
 namespace App\App\Entity;
 
 use App\App\Service\AdminSettingService;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Display collections of items cards with pagination
@@ -12,15 +13,16 @@ class Collection
 
     private $items = [];
     private $pagination = null;
-    private $redirectPage = null;
+    private $allItemsCount;
+    private $pages;
+
     private $collectionItems = [];
     private $itemsPerPage;
     private $collectionPath;
     private $currentPage;
-    private $allItemsCount;
-    private $pages;
     private $filter = null;
     private $order = null;
+    private $redirect = false;
 
     /**
      * @param array array $collectionItems The collection items before being filtered
@@ -34,12 +36,13 @@ class Collection
     {
         $this->collectionItems = $collectionItems;
         $this->itemsPerPage = $itemsPerPage;
-        $this->collectionPath= $collectionPath;
+        $this->collectionPath = $collectionPath;
         $this->currentPage = $currentPage;
-        $this->allItemsCount = count($collectionItems);
-        $this->pages = ceil($this->allItemsCount / $itemsPerPage);
         $this->filter = $filter;
         $this->order = $order;
+        
+        $this->allItemsCount = count($collectionItems);
+        $this->pages = ceil($this->allItemsCount / $itemsPerPage);
         
         $this->setItems();
         $this->setPagination();
@@ -58,10 +61,7 @@ class Collection
             $this->items = $items;
         } else {
             if($this->currentPage > $this->pages || $this->currentPage <= 0) {
-                if($this->currentPage > $this->pages) $this->currentPage = $this->pages;
-                if($this->currentPage <= 0) $this->currentPage = 1;
-                $this->setRedirectPage($this->currentPage);
-                return;
+                $this->setRedirect(true);
             }
             $offset = ((int)$this->currentPage - 1) * $this->itemsPerPage;
             foreach($this->collectionItems as $i => $item) {
@@ -84,21 +84,7 @@ class Collection
 
     private function setPagination()
     {
-        $this->pagination = new Pagination($this->collectionPath, $this->pages, $this->currentPage, $this->filter);
-    }
-
-    public function getRedirectPage(): ?string
-    {
-        return $this->redirectPage;
-    }
-
-    /**
-     * @param int|string $pageNumber 
-     * @return void 
-     */
-    public function setRedirectPage($pageNumber): void
-    {
-        $this->redirectPage = (int)$pageNumber;
+        $this->pagination = new Pagination($this->collectionPath, $this->pages, $this->currentPage, $this->filter, $this->order);
     }
 
     public function getFilter(): ?string
@@ -121,18 +107,14 @@ class Collection
         $this->order = $order;
     }
 
-    /**
-     * Tells if the page must be redirected or not
-     * @return null|int NULL if no need to redirect / The Page Number to redirect to (integer) otherwise
-     */
-    public function redirect(): ?int
+    public function getRedirect(): ?bool
     {
-        if($this->getRedirectPage() && !empty($this->collectionItems)) {
-            return $this->getRedirectPage();
-        } else {
-            return null;
-        }
-        
+        return $this->redirect;
+    }
+
+    public function setRedirect(bool $yesNo): void
+    {
+        $this->redirect = $yesNo;
     }
 
 }

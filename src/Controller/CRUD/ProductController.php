@@ -83,9 +83,8 @@ class ProductController extends AbstractController
             $page,
             $orderBy
         );
-        if($page = $collection->redirect()) {
-            return $this->redirectToRoute('catalog', ['page' => $page]);
-        }
+        if($collection->getRedirect()) return $this->redirectToRoute($request->get('_route'));
+
         return $this->render('crud/product/list.html.twig', [
             'collection' => $collection,
             'itemColWidth' => $this->adminSettingService->getBoostrapColWidth()
@@ -109,7 +108,7 @@ class ProductController extends AbstractController
             $this->entityManager->flush();
             return $this->redirectToRoute("admin_products");
         }
-        return $this->renderForm('product/create.html.twig', [
+        return $this->renderForm('crud/product/create.html.twig', [
             'productForm' => $form,
         ]);
     }
@@ -138,7 +137,7 @@ class ProductController extends AbstractController
             $this->addFlash('success', 'The product "'.$product->getName().'" has been updated.');
             return $this->redirectToRoute("admin_products");
         }
-        return $this->renderForm('product/edit.html.twig', [
+        return $this->renderForm('crud/product/edit.html.twig', [
             'productForm' => $form,
             'product' => $product
         ]);
@@ -162,23 +161,18 @@ class ProductController extends AbstractController
      */
     public function adminList($page, $orderBy, $order, Request $request, ProductRepository $productRepository): Response
     {
-        // default values
         $orderBy = $orderBy ?? 'id';
         $order = $order ?? 'desc';
-        // create collection
-        $products = $productRepository->findForCollection(null, null, $orderBy, $order);
+    
         $collection = new Collection(
-            $products,
+            $productRepository->findForCollection(null, null, $orderBy, $order),
             $this->adminSettingService->getValue('entitiesPerAdminListPage'),
-            $this->generateUrl($request->attributes->get('_route')),
+            $this->generateUrl($request->get('_route')),
             $page,
             $orderBy,
             $order
         );
-        // redirect if wrong page
-        if($page = $collection->redirect()) {
-            return $this->redirectToRoute($request->attributes->get('_route'), ['page' => $page, 'orderBy' => $orderBy, 'order' => $order]);
-        }
+        if($collection->getRedirect()) return $this->redirectToRoute($request->get('_route'));
         // render
         return $this->render('crud/product/admin-list.html.twig', [
             'collection' => $collection

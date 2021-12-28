@@ -18,12 +18,12 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">Name</th>
+                <th scope="col">{{ collListThLink('Name', 'name', app.request, collection)|raw }}</th>
                 <th scope="col">Options</th>
             </tr>
         </thead>
         <tbody>
-            {% for category in categories %}
+            {% for category in collection.items %}
             <tr>
                 <td>
                     <a href="{{ path("category", {slug:category.slug}) }}" target="_blank">{{category.name}}</a>
@@ -36,4 +36,5 @@
             {% endfor %}
         </tbody>
     </table>
+    {% include "_parts/_collection-pagination.html.twig" %}
 {% endblock %}

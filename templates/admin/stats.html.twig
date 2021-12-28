@@ -12,49 +12,25 @@
 {% endblock %}
 
 {% block content %}
-
-    <div class="row">
-
-        <div class="col-md-6">
-            <h3>Sales</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Product</th>
-                        <th scope="col">Units sold</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p in bestSellers %}
-                    <tr>
-                        <td><a href="{{ path("product", {"category_slug":p.category.slug, "slug":p.slug}) }}" target="_blank">{{ p.name }}</a></td>
-                        <td>{{ p.purchases ?? 0 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    
-        <div class="col-md-6">
-            <h3>Products views</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Product</th>
-                        <th scope="col">Views</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p in mostViewedProducts %}
-                    <tr>
-                        <td><a href="{{ path("product", {"category_slug":p.category.slug, "slug":p.slug}) }}" target="_blank">{{ p.name }}</a></td>
-                        <td>{{ p.views ?? 0 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    
-    </div>
-
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">{{ collListThLink('ID', 'id', app.request, collection)|raw }}</th>
+                    <th scope="col">{{ collListThLink('Product', 'name', app.request, collection)|raw }}</th>
+                    <th scope="col">{{ collListThLink('Units sold', 'purchases', app.request, collection)|raw }}</th>
+                    <th scope="col">{{ collListThLink('Page views', 'views', app.request, collection)|raw }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in collection.items %}
+                <tr>
+                    <td class="small txt-muted">{{ p.id }}</td>
+                    <td><a href="{{ path("product", {"category_slug":p.category.slug, "slug":p.slug}) }}" target="_blank">{{ p.name }}</a></td>
+                    <td>{{ p.purchases ?? 0 }}</td>
+                    <td>{{ p.views ?? 0 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% include "_parts/_collection-pagination.html.twig" %}
 {% endblock %}

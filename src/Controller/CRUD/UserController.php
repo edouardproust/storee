@@ -3,6 +3,8 @@
 namespace App\Controller\CRUD;
 
 use App\Form\UserAdminType;
+use App\App\Entity\Collection;
+use App\App\Service\AdminSettingService;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,10 +15,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class UserController extends AbstractController
 {
 
-    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository)
+    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository, AdminSettingService $adminSettingService)
     {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
+        $this->adminSettingService = $adminSettingService;
     }
 
     /**
@@ -42,15 +45,21 @@ class UserController extends AbstractController
     /**
      * Show list of users
      * 
-     * @Route("/admin/users", name="admin_users")
+     * @Route("/admin/users/{page<\d+>?1}/{orderBy?}_{order?}", name="admin_users")
      */
-    public function adminList(): Response
+    public function adminList($page, $orderBy, $order, Request $request): Response
     {
-        $users = $this->userRepository->findBy([], [
-            'id' => 'ASC'
-        ]);
+        $collection = new Collection(
+            $this->userRepository->findForCollection(null, $orderBy, $order),
+            $this->adminSettingService->getValue('entitiesPerAdminListPage'),
+            $this->generateUrl($request->get('_route')),
+            $page,
+            $orderBy ?? 'id',
+            $order ?? 'desc'
+        );
+        if($collection->getRedirect()) return $this->redirectToRoute($request->get('_route'));
         return $this->render('crud/user/admin-list.html.twig', [
-            'users' => $users
+            'collection' => $collection
         ]);
     }
 

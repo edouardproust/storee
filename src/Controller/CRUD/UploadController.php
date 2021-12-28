@@ -87,22 +87,22 @@ class UploadController extends AbstractController
 
     /**
      * Show list of uploads on the admin panel
-     * @Route("/admin/uploads/{page<\d+>?1}", name="admin_uploads")
+     * @Route("/admin/uploads/{page<\d+>?1}/{orderBy?}_{order?}", name="admin_uploads")
      */
-    public function adminList($page, Request $request): Response
+    public function adminList($page, $orderBy, $order, Request $request): Response
     {
-        $databaseUploads = $this->uploadRepository->findBy([], ['createdAt' => 'DESC']);
+        $databaseUploads = $this->uploadRepository->findForCollection(null, $orderBy, $order);
         $storageUploads = $this->uploadService->getExistingFilesList($databaseUploads);
         // pagination
         $collection = new Collection(
             $storageUploads,
             $this->adminSettingService->getValue('entitiesPerAdminListPage'),
             $this->generateUrl($request->get('_route')),
-            $page
+            $page,
+            $orderBy ?? 'createdAt',
+            $order ?? 'desc'
         );
-        if($page = $collection->redirect()) {
-            return $this->redirectToRoute($request->get('_route'), ['page' => $page]);
-        }
+        if($collection->getRedirect()) return $this->redirectToRoute($request->get('_route'));
         // view
         return $this->render('crud/upload/admin-list.html.twig', [
             'collection' => $collection

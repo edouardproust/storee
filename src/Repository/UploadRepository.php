@@ -19,32 +19,26 @@ class UploadRepository extends ServiceEntityRepository
         parent::__construct($registry, Upload::class);
     }
 
-    // /**
-    //  * @return Upload[] Returns an array of Upload objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+    /**
+     * Get a list of uploads, based on several criterias like: the category, the limit and the order criteria.
+     * 
+     * @param ?int $maxResults Limit the number of Uploads | null for unlimited amount. Default: null
+     * @param string $orderBy Property to order by. This must be a property of the Upload entity. Eg. 'views', 'purchases', 'createdAt',...
+     * @param string $order Must be 'ASC' or 'DESC'. Default: 'DESC'
+     * @return Upload[] Array of Upload object to which we add a 'sales' property (Upload::sales)
+     * @return array 
+     */
+    public function findForCollection($maxResults = null, ?string $orderBy = null, ?string $order): array
+    {        
+        $orderBy = $orderBy ?? 'createdAt';
+        $order = $order ?? 'desc';
 
-    /*
-    public function findOneBySomeField($value): ?Upload
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
+        $query = $this->createQueryBuilder('p');
+        if($orderBy) $query->orderBy('p.'.$orderBy, $order);
+        return $query
+            ->setMaxResults($maxResults)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
-    */
+
 }

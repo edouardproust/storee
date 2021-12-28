@@ -17,9 +17,9 @@ class Pagination
      * @param int|string $currentPage Which page of the collection is being visited right now?
      * @return mixed 
      */
-    public function __construct(string $collectionPath, int $pages, int $currentPage, ?string $orderBy)
+    public function __construct(string $collectionPath, int $pages, int $currentPage, ?string $orderBy, ?string $order)
     {
-        $this->setButtons($collectionPath, $pages, $currentPage, $orderBy);
+        $this->setButtons($collectionPath, $pages, $currentPage, $orderBy, $order);
     }
 
     public function getButtons(): ?array
@@ -27,7 +27,7 @@ class Pagination
         return $this->buttons;
     }
 
-    public function setButtons(string $collectionPath, int $pages, int $currentPage, ?string $orderBy): void
+    public function setButtons(string $collectionPath, int $pages, int $currentPage, ?string $orderBy, ?string $order): void
     {
         if($pages > 1) {
             for($p = 1; $p <= $pages; $p++) {
@@ -37,7 +37,11 @@ class Pagination
                 $url = null;
                 if((int)$currentPage !== $p) {
                     $url = $collectionPath . '/' . $p;
-                    if($orderBy) $url .= '/' . $orderBy;
+                    if($orderBy) {
+                        $url .= '/' . $orderBy;
+                        if($order) $url .= '_' . $order;
+                    }
+                    
                 }
                 $this->buttons[$p]['url'] = $url;
             }

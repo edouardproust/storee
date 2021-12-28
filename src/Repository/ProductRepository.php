@@ -32,9 +32,10 @@ class ProductRepository extends ServiceEntityRepository
      * @return Product[] Array of Product object to which we add a 'sales' property (Product::sales)
      * @return array 
      */
-    public function findForCollection(?Category $category = null, $maxResults = null, ?string $orderBy = null, ?string $order = 'ASC'): array
+    public function findForCollection(?Category $category = null, $maxResults, ?string $orderBy = null, ?string $order = null): array
     {
-        if(!$orderBy) $orderBy = $this->adminSettingService->getValue('collectionFilterDefault');
+        $orderBy = $orderBy ?? $this->adminSettingService->getValue('collectionFilterDefault');
+        $order = $order ?? 'desc';
         
         $query = $this->createQueryBuilder('p');
         if($category) $query->andWhere('p.category = '.$category->getId());

@@ -75,21 +75,19 @@ class PurchaseController extends AbstractController
     /**
      * Show list of purchases
      * 
-     * @Route("/admin/orders/{page<\d+>?1}", name="admin_purchases")
+     * @Route("/admin/orders/{page<\d+>?1}/{orderBy?}_{order?}", name="admin_purchases")
      */
-    public function adminList($page, Request $request): Response
+    public function adminList($page, $orderBy, $order, Request $request): Response
     {
-        $purchases = $this->purchaseRepository->findBy([], ['createdAt' => 'DESC']);
-        // pagination
         $collection = new Collection(
-            $purchases,
+            $this->purchaseRepository->findForCollection(null, $orderBy, $order),
             $this->adminSettingService->getValue('entitiesPerAdminListPage'),
             $this->generateUrl($request->get('_route')),
-            $page
+            $page,
+            $orderBy ?? 'id',
+            $order ?? 'desc'
         );
-        if($page = $collection->redirect()) {
-            return $this->redirectToRoute($request->get('_route'), ['page' => $page]);
-        }
+        if($collection->getRedirect()) return $this->redirectToRoute($request->get('_route'));
         // view
         return $this->render('crud/purchase/admin-list.html.twig', [
             'collection' => $collection

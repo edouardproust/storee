@@ -22,8 +22,8 @@
         <table class="table align-middle">
             <tr>
                 <th scope="col" class="admin-collection-img-md">Preview</th>
-                <th scope="col">Name</th>
-                <th scope="col">Uploaded on</th>
+                <th scope="col">{{ collListThLink('Name', 'name', app.request, collection)|raw }}</th>
+                <th scope="col">{{ collListThLink('Uploaded on', 'createdAt', app.request, collection)|raw }}</th>
                 <th scope="col">Options</th>
             </tr>
             {% if collection.items is not empty %}

@@ -24,7 +24,7 @@ class CollectionService
 
     private function getCollectionAdminListThUrl(Request $request, string $orderBy, Collection $collection): string
     {
-        $route = $request->attributes->get('_route');
+        $route = $request->get('_route');
         $page = 1; // alway go back to page 1 after changing order criteria
         $orderBy = $orderBy;
         $order = $collection->getOrder();

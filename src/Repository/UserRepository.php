@@ -36,32 +36,25 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+    /**
+     * Get a list of Users, based on several criterias like: the limit etc.
+     * 
+     * @param ?int $maxResults Limit the number of Users | null for unlimited amount. Default: null
+     * @param string $orderBy Property to order by. This must be a property of the User entity. Eg. 'views', 'purchases', 'createdAt',...
+     * @param string $order Must be 'ASC' or 'DESC'. Default: 'DESC'
+     * @return User[] Array of User object to which we add a 'sales' property (User::sales)
+     * @return array 
+     */
+    public function findForCollection($maxResults = null, ?string $orderBy, ?string $order): array
+    {       
+        $orderBy = $orderBy ?? 'id';
+        $order = $order ?? 'desc';
 
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
+        $query = $this->createQueryBuilder('p');
+        if($orderBy) $query->orderBy('p.'.$orderBy, $order);
+        return $query
+            ->setMaxResults($maxResults)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
-    */
 }
