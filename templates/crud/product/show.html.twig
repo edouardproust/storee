@@ -21,7 +21,12 @@
                 <h1 class="mb-2">{{product.name}}</h1>
                 <p><b>{{product.priceWithCurrency}}</b></p>
                 <p>{{product.shortDescription}}</p>
-                <a href="{{ path("cart_plus", {id:product.id}) }}" class="btn btn-primary">Add to cart</a>
+                <form method="post" action="">
+                    <div class="d-flex">
+                        <input type="number" name="qty" value="1" class="form-control me-2" style="max-width:64px">
+                        <button type="submit" class="btn btn-primary">Add to cart</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

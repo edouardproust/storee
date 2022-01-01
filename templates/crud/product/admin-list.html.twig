@@ -48,7 +48,9 @@
                 <td>{{product.createdAt|date('m-d-Y')}}</td>
                 <td>
                     <a href="{{path("product_edit",{id:product.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
-                    <a href="{{path("product_delete",{id:product.id})}}" class="btn btn-sm btn-danger">Delete</a>
+                    {% set modal = modal('delete_'~ product.id) %}
+                    {{ modal|trigger('Delete', 'btn btn-danger btn-sm')|raw }}
+                    {{ modal|popup('Delete Product', null, 'Confirm', path("product_delete",{id:product.id}))|raw }}
                 </td>
             </tr>
             {% endfor %}

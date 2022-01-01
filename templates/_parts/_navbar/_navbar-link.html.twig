@@ -1,0 +1,9 @@
+<li class="nav-item position-relative">
+
+    {% block navbarLink %}{% endblock %}
+
+    {% if badge is defined and badge is not null %}
+        {% include '_parts/_navbar/_badge.html.twig' with {badge: badge} %}
+    {% endif %}
+
+</li>

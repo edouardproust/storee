@@ -19,7 +19,15 @@
             {{ form_start(userForm) }}
             {{ form_widget(userForm) }}
             <button type="submit" class="btn btn-primary">Edit</button>
+
+            {% if "ROLE_ADMIN" not in user.roles %}
+                {% set modal = modal('delete_'~ user.id) %}
+                <span class="ms-2">
+                    {{ modal|trigger('Delete user', 'text-danger')|raw }}
+                </span>
+            {% endif %}
             {{ form_end(userForm) }}
+            {{ modal|popup('Delete User', null, 'Confirm', path("user_delete",{id:user.id}))|raw }}
         </div>
     </div>
     

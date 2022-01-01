@@ -2,18 +2,22 @@
 
 namespace App\Twig;
 
-use App\App\Entity\Collection;
 use App\App\Path;
+use App\Entity\User;
 use Twig\TwigFilter;
 use App\Entity\Upload;
 use Twig\TwigFunction;
+use App\Entity\Purchase;
+use App\App\Entity\Modal;
+use App\App\Entity\Collection;
 use App\App\Helper\PriceHelper;
 use App\App\Helper\TemplateHelper;
 use App\App\Service\UploadService;
 use Twig\Extension\AbstractExtension;
+use App\App\Service\CollectionService;
 use App\Repository\CategoryRepository;
 use App\App\Service\AdminSettingService;
-use App\App\Service\CollectionService;
+use App\Repository\PurchaseRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -35,13 +39,14 @@ class AppExtension extends AbstractExtension
     /** @var CollectionService */
     private $collectionService;
 
-    public function __construct(UploadService $uploadService, CategoryRepository $categoryRepository, Path $path, AdminSettingService $adminSettingService, CollectionService $collectionService)
+    public function __construct(UploadService $uploadService, CategoryRepository $categoryRepository, Path $path, AdminSettingService $adminSettingService, CollectionService $collectionService, PurchaseRepository $purchaseRepository)
     {
         $this->uploadService = $uploadService;
         $this->categoryRepository = $categoryRepository;
         $this->path = $path;
         $this->adminSettingService = $adminSettingService;
         $this->collectionService = $collectionService;
+        $this->purchaseRepository = $purchaseRepository;
     }    
     
     public function getFunctions()
@@ -51,7 +56,9 @@ class AppExtension extends AbstractExtension
             new TwigFunction('settingImage', [$this, 'getSettingImage']),
             new TwigFunction('categories', [$this, 'getAllCategories']),
             new TwigFunction('collectionFilterOptions', [$this, 'getCollectionFilterOptions']),
-            new TwigFunction('collListThLink', [$this, 'getCollectionAdminListThLink'])
+            new TwigFunction('collListThLink', [$this, 'getCollectionAdminListThLink']),
+            new TwigFunction('modal', [$this, 'createModal']),
+            new TwigFunction('userLastOrder', [$this, 'getUserLastOrder']),
         ];
     }
 
@@ -63,7 +70,9 @@ class AppExtension extends AbstractExtension
             new TwigFilter('fileIcon', [$this, 'getFileTypeIcon']),
             new TwigFilter('uploadedImgUrl', [$this, 'getUploadedImageUrl']),
             new TwigFilter('strpos', [$this, 'strpos']),
-            new TwigFilter('extract', [$this, 'extract'])
+            new TwigFilter('extract', [$this, 'extract']),
+            new TwigFilter('popup', [$this, 'showPopup']),
+            new TwigFilter('trigger', [$this, 'showModalTrigger'])
         ];
     }
     
@@ -109,6 +118,45 @@ class AppExtension extends AbstractExtension
     public function getCollectionAdminListThLink(string $label, string $orderBy, Request $request, Collection $collection): string
     {
         return $this->collectionService->getCollectionAdminListThLink($label, $orderBy, $request, $collection);
+    }
+
+    /**
+     * Function to generate Modal object
+     * @param null|int $entityId 
+     * @return Modal 
+     */
+    public function createModal(string $modalId): Modal
+    {
+        return new Modal($modalId);
+    }
+
+    /**
+     * Filter to display Modal window
+     * @param Modal $modal 
+     * @param null|string $title 
+     * @param null|string $bodyHtml 
+     * @return array 
+     */
+    public function showPopup(Modal $modal, ?string $title = null, ?string $bodyHtml = null, string $actionBtnLabel = null, ?string $actionBtnUrl = null): string
+    {
+        return $modal->showPopup($title, $bodyHtml, $actionBtnLabel, $actionBtnUrl);
+    }
+
+    /**
+     * Filter to display Modal trigger.
+     * @param Modal $modal  
+     * @param string $btnLabel 
+     * @param null|string $btnClass
+     * @return array 
+     */
+    public function showModalTrigger(Modal $modal, string $btnLabel, ?string $btnClass = null): string
+    {
+        return $modal->showTrigger($btnLabel, $btnClass);
+    }
+
+    public function getUserLastOrder(User $user): ?Purchase
+    {
+        return $this->purchaseRepository->findLastOfUser($user);
     }
 
     /**

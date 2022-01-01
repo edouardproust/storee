@@ -32,6 +32,11 @@ class AdminSetting
      */
     private $upload;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     public function getSlug(): ?string
     {
         return $this->slug;

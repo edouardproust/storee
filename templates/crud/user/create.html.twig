@@ -3,5 +3,28 @@
 {% set title = "Register" %}
 
 {% block content %}
-    Page under construction! Please come back later.
+    <div class="lead mb-5 text-muted">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex ad, placeat consequatur error voluptas ipsam. Repellat eaque iusto reiciendis ad quaerat quasi architecto velit aut in, eos unde non at.</div>
+    {{ form_start(userForm, {attr: {id: 'payment-form', novalidate:''}}) }}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-sm-6">{{ form_row(userForm.email) }}</div>
+                <div class="col-sm-6">{{ form_row(userForm.password) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">{{ form_row(userForm.firstname) }}</div>
+                <div class="col-sm-6">{{ form_row(userForm.lastname) }}</div>
+            </div>
+            {{ form_row(userForm.street) }}
+            <div class="row">
+                <div class="col-sm-6">{{ form_row(userForm.postcode) }}</div>
+                <div class="col-sm-6">{{ form_row(userForm.city) }}</div>
+            </div>
+            {{ form_row(userForm.country) }}
+            {{ form_row(userForm.phone) }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary text-left">Create an account</button>
+    {{ form_end(userForm) }}
+
 {% endblock %}

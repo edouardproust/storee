@@ -101,13 +101,13 @@ class CartService extends CartAbstractController
      * @param int $productId 
      * @return void 
      */
-    public function addOneItem(int $productId): void
+    public function addItems(int $productId, int $unitsToAdd = 1): void
     {
         $cart = $this->getSessionCart();
         if(!isset($cart[$productId])) {
             $cart[$productId] = 0;
         }
-        $cart[$productId]++;
+        $cart[$productId] += $unitsToAdd;
         $this->setSessionCart($cart);
     }
 

@@ -41,7 +41,9 @@
                         <td class="small">{{ upload.name }}</td>
                         <td>{{ upload.createdAt|date("m-d-Y") }}</td>
                         <td>
-                            <a href="{{ path('upload_delete',{id:upload.id}) }}" class="btn btn-sm btn-danger">Delete</a>
+                            {% set modal = modal('delete_'~ upload.id) %}
+                            {{ modal|trigger('Delete', 'btn btn-danger btn-sm')|raw }}
+                            {{ modal|popup('Delete File', null, 'Confirm', path("upload_delete",{id:upload.id}))|raw }}
                         </td>
                     </tr>
                 {% endfor %}

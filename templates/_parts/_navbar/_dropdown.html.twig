@@ -1,0 +1,27 @@
+{% extends "_parts/_navbar/_navbar-link.html.twig" %}
+
+{% block navbarLink %}
+
+    {% set active = basePath in app.request.requestUri ? 'active' : '' %}
+
+    <span class="dropdown nav-link {{ active }}">
+
+        <span class="dropdown-toggle" type="button" id="{{ text }}_menu" data-bs-toggle="dropdown">
+            {{ text }}
+        </span>
+
+        <ul class="dropdown-menu">
+        {% for item in items %}
+            {% set path = item.path ?? basePath ~ item.slug %}
+            {% set active = path == app.request.requestUri ? 'active' : '' %}
+            <li>
+                <a class="dropdown-item {{ active }}" href="{{ path }}">
+                    {{ item.name }}
+                </a>
+            </li>
+        {% endfor %}
+        </ul>  
+
+    </span>
+
+{% endblock %}

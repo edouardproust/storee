@@ -1,6 +1,6 @@
 <div class="mb-3">
     {{ form_label(input) }}
-    {% if img is defined %}
+    {% if img is defined and img is not null %}
         {% if img.url|fileExists or img.url|strpos('picsum.photos') %}
             <div class="mb-2">
                 <img src="{{ img.url }}" style="max-width:200px">

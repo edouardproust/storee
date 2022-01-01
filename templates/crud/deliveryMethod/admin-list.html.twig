@@ -37,7 +37,9 @@
                 </td>
                 <td>
                     <a href="{# {{path("delivery_edit",{id:dm.id})}} #}" class="btn btn-sm btn-primary mr-2">Edit</a>
-                    <a href="{# {{path("delivery_delete",{id:dm.id})}} #}" class="btn btn-sm btn-danger">Delete</a>
+                    {% set modal = modal('delete_'~ dm.id) %}
+                    {{ modal|trigger('Delete', 'btn btn-danger btn-sm')|raw }}
+                    {{ modal|popup('Delete Delivery Method', null, 'Confirm', path("deliveryMethod_delete",{id:dm.id}))|raw }}
                 </td>
             </tr>
             {% endfor %}

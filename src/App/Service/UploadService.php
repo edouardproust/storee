@@ -82,7 +82,7 @@ class UploadService
             if($image instanceof Upload) { // is manually uploaded file
                 return $image->getUrl();
             } elseif(is_string($image)) {
-                if(strpos($image, 'picsum.photos')) { // is fixture
+                if(strpos($image, 'picsum.photos') || strpos($image, $this->path->IMG_SETTINGS_DEFAULT_REL())) { // is fixture
                     return $image;
                 } else { // is a setting image
                     return $this->path->UPLOADS_SETTINGS_REL().$image;

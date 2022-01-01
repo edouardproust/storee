@@ -26,7 +26,7 @@ class PurchaseItemListener
     private function setProductData(PurchaseItem $item): void
     {
         if(empty($item->getProductData())) {
-            $item->setProductData(serialize($item->getProduct()));
+            $item->setProductData($item->getProduct());
         }
     }
 

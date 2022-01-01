@@ -27,9 +27,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class DevFixtures extends AbstractFixture 
 {
 
-    const ADMIN_USERNAME = "admin";
-    const ADMIN_PASSWORD = "admin";
-
     const CATEGORIES = 10;
     const PRODUCTS = 77;
     const USERS = 34;
@@ -95,8 +92,6 @@ class DevFixtures extends AbstractFixture
         $this->faker->addProvider(new \Liior\Faker\Prices($this->faker));
         $this->faker->addProvider(new \Bluemmb\Faker\PicsumPhotosProvider($this->faker));
 
-        // create entities
-        $this->createAdmin();
         $this->createUsers();
         $this->createCategories();
         $this->createProductMainImages();
@@ -138,24 +133,6 @@ class DevFixtures extends AbstractFixture
 
         // flush
         $manager->flush();
-    }
-
-    private function createAdmin(): void
-    {
-        $admin = new User();
-        $admin
-            ->setEmail(self::ADMIN_USERNAME)
-            ->setFirstname('Sygno')
-            ->setLastname('Studio')
-            ->setPassword($this->hasher->hashPassword($admin, self::ADMIN_PASSWORD))
-            ->setRoles(['ROLE_ADMIN'])
-            ->setCreatedAt(new \DateTime('yesterday'))
-            ->setStreet($this->faker->streetAddress())
-            ->setPostcode($this->faker->postcode())
-            ->setCity($this->faker->city())
-            ->setCountry(self::USERS_COUNTRY)
-            ->setPhone($this->faker->phoneNumber());
-        $this->users[] = $admin;
     }
     
     /**

@@ -41,7 +41,7 @@ class AdminSettingsType extends AbstractType
                     new Assert\NotBlank(),
                     new Assert\Length(null, 2, 255)
                 ]
-                ])
+            ])
             ->add('logo', Type\FileType::class, [
                 'mapped' => false,
                 'label' => 'Store logo',
@@ -50,6 +50,18 @@ class AdminSettingsType extends AbstractType
                     new Assert\File([
                         'maxSize' => '200k',
                         'mimeTypes' => ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'],
+                        'mimeTypesMessage' => 'This image is not valid.',
+                    ])
+                ],
+            ])
+            ->add('favicon', Type\FileType::class, [
+                'mapped' => false,
+                'label' => 'Favicon',
+                'help' => 'Allowed formats: jpg, png. Maximum size: 50Ko. Recommended dimensions: 32x32 pixels.',
+                'constraints' => [
+                    new Assert\File([
+                        'maxSize' => '50k',
+                        'mimeTypes' => ['image/jpeg', 'image/jpg', 'image/png'],
                         'mimeTypesMessage' => 'This image is not valid.',
                     ])
                 ],
@@ -134,7 +146,7 @@ class AdminSettingsType extends AbstractType
             ])
             ->setRequired(false);
 
-        $builder->get('directCheckout') ->addModelTransformer($this->checkboxTransformer);
+        $builder->get('directCheckout')->addModelTransformer($this->checkboxTransformer);
 
     }
 

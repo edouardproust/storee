@@ -22,7 +22,7 @@ class Product
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank(message="The product name cannot be blank.")
-     * @Assert\Length(min=3, minMessage="Your product name is too short. It should have {{ limit }} characters or more.")
+     * @Assert\Length(min=3, max=255, minMessage="Your product name is too short. It should have {{ limit }} characters or more.")
      */
     private $name;
 

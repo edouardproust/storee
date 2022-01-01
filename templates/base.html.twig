@@ -5,7 +5,7 @@
             <meta charset="UTF-8">
         {% endblock %}
         <title>{% block title %}{% endblock %} - {{ setting('siteName') }}</title>
-        <link rel="icon" href="/img/favicon.png">
+        <link rel="icon" href="{{ settingImage('favicon') }}">
         {# Run `composer require symfony/webpack-encore-bundle`
            and uncomment the following Encore helpers to start using Symfony UX #}
         {% block stylesheets %}
@@ -19,7 +19,7 @@
         {% endblock %}
     </head>
     <body>
-        {% include "_parts/_navbar.html.twig" %}
+        {% include "_parts/_navbar/_navbar.html.twig" %}
 
             {% block body %}{% endblock %}
 

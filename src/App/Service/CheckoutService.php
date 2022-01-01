@@ -8,7 +8,6 @@ use App\Entity\Purchase;
 use App\App\Entity\CartItem;
 use App\Entity\PurchaseItem;
 use App\App\Service\CartService;
-use App\Repository\PurchaseRepository;
 use App\Repository\DeliveryCountryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -22,17 +21,14 @@ class CheckoutService extends AbstractController
     private $cartService;
     /** @var UserPasswordHasherInterface */
     private $hasher;
-    private $purchaseRepository;
 
     public function __construct(
         DeliveryCountryRepository $countryRepository,
         CartService $cartService,
-        PurchaseRepository $purchaseRepository,
         UserPasswordHasherInterface $hasher
     ){
         $this->countryRepository = $countryRepository;
         $this->cartService = $cartService;
-        $this->purchaseRepository = $purchaseRepository;
         $this->hasher = $hasher;
     }
 

@@ -18,14 +18,15 @@ class AdminSettingController extends AbstractController
 
     /** @var AdminSettingService */
     private $adminSettingService;
-
+    /** @var AdminSettingRepository */
+    private $adminSettingRepository;
     /** @var UploadService */
     private $uploadService;
 
-    public function __construct(AdminSettingService $adminSettingService, AdminSettingRepository $settingRepository, EntityManagerInterface $entityManager, UploadService $uploadService)
+    public function __construct(AdminSettingService $adminSettingService, AdminSettingRepository $adminSettingRepository, EntityManagerInterface $entityManager, UploadService $uploadService)
     {
         $this->adminSettingService = $adminSettingService;
-        $this->settingRepository = $settingRepository;
+        $this->adminSettingRepository = $adminSettingRepository;
         $this->entityManager = $entityManager;
         $this->uploadService = $uploadService;
     }
@@ -47,26 +48,20 @@ class AdminSettingController extends AbstractController
                 $this->addFlash('danger', 'Some of the settings are not valid. Please correct them below.');
             }
         }
-        // get images for twig
-        $images = [];
-        foreach(['logo', 'homeHero'] as $img) {
-            $images[$img] = $this->adminSettingService->getUpload($img);
-            if($images[$img]) $images[$img]->deleteUrl = $this->generateUrl('admin_setting_delete', ['slug' => $img]);
-        }
         // twig
         return $this->render('crud/adminSetting/admin-list.html.twig', [
             'settingsForm' => $form->createView(),
-            'images' => $images
+            'images' => $this->adminSettingService->getImagesForTwig()
         ]);
     }
 
     /**
      * Set this setting's value to NULL
-     * @Route("/admin/settings/delete/{slug}", name="admin_setting_delete")
+     * @Route("/admin/settings/delete/{id<\d+>}", name="admin_setting_delete")
      */
-    public function delete($slug): Response
+    public function delete($id): Response
     { 
-        $setting = $this->settingRepository->findOneBy(['slug' => $slug]);
+        $setting = $this->adminSettingRepository->findOneBy(['id' => $id]);
         $previousUpload = $setting->getUpload();
         // set setting values to NULL
         $setting

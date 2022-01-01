@@ -11,11 +11,16 @@
     }%}
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script defer src="/js/snippets/clickable-row.js"></script>
+{% endblock %}
+
 {% block crud_add_text %}Create new User{% endblock %}
 {% block crud_add_link %}{# {{ path("user_create") }} #}{% endblock %}
 
 {% block content %}
-    <table class="table">
+    <table class="table table-hover">
         <tr>
             <th scope="col">{{ collListThLink('ID', 'id', app.request, collection)|raw }}</th>
             <th scope="col">{{ collListThLink('Firstname', 'firstname', app.request, collection)|raw }}</th>
@@ -23,11 +28,11 @@
             <th scope="col">{{ collListThLink('Registered on', 'createdAt', app.request, collection)|raw }}</th>
             <th scope="col">{{ collListThLink('City', 'city', app.request, collection)|raw }}</th>
             <th scope="col">{{ collListThLink('Country', 'country', app.request, collection)|raw }}</th>
+            <th scope="col">Last order</th>
             <th scope="col">Admin</th>
-            <th scope="col">Options</th>
         </tr>
         {% for user in collection.items %}
-        <tr>
+        <tr class="clickable-row" href="{{ path('admin_user_edit',{id:user.id}) }}">
             <td class="small text-muted">{{ user.id }}</td>
             <td>{{ user.firstname }}</td>
             <td>{{ user.lastname }}</td>
@@ -35,14 +40,17 @@
             <td>{{ user.city }}</td>
             <td>{{ user.country }}</td>
             <td>
-                {% if "ROLE_ADMIN" in user.roles %}
-                    <i class="fas fa-check"></i>
+                {% set lastOrder = userLastOrder(user) %}
+                {% if lastOrder is not null %}
+                    {{ lastOrder.createdAt|date('m-d-Y') }}
+                    <span class="small text-muted"> ({{ lastOrder.total|price }})</span>
+                {% else %}
+                    <div class="small text-muted">No Orders</div> 
                 {% endif %}
             </td>
             <td>
-                <a href="{{path("admin_user_edit",{id:user.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
-                {% if "ROLE_ADMIN" not in user.roles %}
-                    <a href="{{path("user_delete",{id:user.id})}}" class="btn btn-sm btn-danger">Delete</a>
+                {% if "ROLE_ADMIN" in user.roles %}
+                    <i class="fas fa-check"></i>
                 {% endif %}
             </td>
         </tr>

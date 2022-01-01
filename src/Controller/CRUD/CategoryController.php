@@ -84,11 +84,21 @@ class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/category/edit/{id}", name="category_edit")
+     * @Route("/category/edit/{id<\d+>}", name="category_edit")
      */
     public function edit($id, Request $request): Response
     {
         $category = $this->categoryRepository->find($id);
+
+        // security
+        $wrongUrl = false;
+        if(!$category) $wrongUrl = true;
+        if($category->getSlug() === 'undefined') {
+            $this->addFlash('danger', 'Category "'.$category->getName().'" is not editable.');
+            $wrongUrl = true;
+        }
+        if ($wrongUrl) return $this->redirectToRoute('admin_categories');
+
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()) {
@@ -102,11 +112,21 @@ class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/catagory/delete/{id}", name="category_delete")
+     * @Route("/category/delete/{id<\d+>}", name="category_delete")
      */
     public function delete($id): Response
     {
         $category = $this->categoryRepository->find($id);
+
+        // security
+        $wrongUrl = false;
+        if(!$category) $wrongUrl = true;
+        if($category->getSlug() === 'undefined') {
+            $this->addFlash('danger', 'Category "'.$category->getName().'" is not removable.');
+            $wrongUrl = true;
+        }
+        if ($wrongUrl) return $this->redirectToRoute('admin_categories');
+
         // Update category of products to "Undefined"
         $products = $category->getProducts();
         $undefinedCategory = $this->categoryRepository->findOneBy(['slug' => 'undefined']);
@@ -118,6 +138,7 @@ class CategoryController extends AbstractController
         $this->em->remove($category);
         $this->em->flush();
         // redirect
+        $this->addFlash('success', 'Category "'.$category->getName().'" has been deleted.');
         return $this->redirectToRoute("admin_categories");
     }
 

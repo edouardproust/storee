@@ -1,0 +1,14 @@
+{% extends "_parts/_navbar/_navbar-link.html.twig" %}
+
+{% block navbarLink %}
+
+    {% set color = color ?? 'primary' %}
+    {% set class = class ?? '' %}
+
+    <a href="{{path}}" class="mx-2">
+        <div class="btn btn-{{ color }} {{ class }}">
+            {{ text }}
+        </div>
+    </a>
+
+{% endblock %}

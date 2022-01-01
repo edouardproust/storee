@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Form\UserType;
-use App\App\Service\AccountService;
 use App\App\Service\CheckoutService;
 use App\Repository\PurchaseRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,13 +19,11 @@ class AccountController extends AbstractController
         EntityManagerInterface $em, 
         UserPasswordHasherInterface $hasher, 
         PurchaseRepository $purchaseRepository,
-        AccountService $accountService,
         CheckoutService $checkoutService)
     {
         $this->em = $em;
         $this->hasher = $hasher;
         $this->purchaseRepository = $purchaseRepository;
-        $this->accountService = $accountService;
         $this->checkoutService = $checkoutService;
     }
 
@@ -43,22 +40,24 @@ class AccountController extends AbstractController
         $form = $this->createForm(UserType::class, $user);
         $existingPassword = $user->getPassword();
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()) {
-            if($user->getPassword() == null) {
-                $user->setPassword($existingPassword);
+        if($form->isSubmitted()) {
+            if($form->isValid()) {
+                if(!$form->get('password')->getData()) {
+                    $user->setPassword($existingPassword);
+                } else {
+                    $user->setPassword($this->hasher->hashPassword($user, $user->getPassword()));
+                }
+                $this->em->persist($user);
+                $this->em->flush();
+                $this->addFlash('success', 'Your informations have been updated successfully.');
             } else {
-                $user->setPassword($this->hasher->hashPassword($user, $user->getPassword()));
+                $this->addFlash('danger', 'User not updated. Please correct errors in the form below.');
             }
-            $this->em->persist($user);
-            $this->em->flush();
-            $this->addFlash('success', 'Your informations have been updated successfully.');
         }
-
         // View
         return $this->render('account/show.html.twig', [
             'purchases' => $purchases,
             'userForm' => $form->createView(),
-            'accountService' => $this->accountService,
             'checkoutService' => $this->checkoutService
         ]);
     }

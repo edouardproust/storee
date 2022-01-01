@@ -11,6 +11,7 @@
             {{ form_start(loginForm) }}
             {{ form_widget(loginForm) }}
             <button type="submit" class="btn btn-primary">Login</button>
+            <div class="small mt-3">Don't have an account yet? <a href="{{ path('user_create') }}">Create one.</a></div>
             {{ form_end(loginForm) }}
         </div>
     </div>

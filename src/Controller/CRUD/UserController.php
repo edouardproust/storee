@@ -2,32 +2,63 @@
 
 namespace App\Controller\CRUD;
 
+use App\Entity\User;
+use App\Form\UserType;
 use App\Form\UserAdminType;
 use App\App\Entity\Collection;
-use App\App\Service\AdminSettingService;
 use App\Repository\UserRepository;
+use App\App\Service\AdminSettingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
+    /** @var AuthenticationUtils */
+    private $authenticationUtils;
 
-    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository, AdminSettingService $adminSettingService)
+    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository, AdminSettingService $adminSettingService, AuthenticationUtils $authenticationUtils, UserPasswordHasherInterface $hasher)
     {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
         $this->adminSettingService = $adminSettingService;
+        $this->authenticationUtils = $authenticationUtils;
+        $this->hasher = $hasher;
     }
 
     /**
      * @Route("/register", name="user_create")
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return $this->render('crud/user/create.html.twig');
+        $user = new User;
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+        if($form->isSubmitted()) {
+            if($form->isValid()) {
+                $user->setPassword($this->hasher->hashPassword($user, $form->get('password')->getData()));
+                try {
+                    $this->entityManager->persist($user);
+                    $this->entityManager->flush();
+                } catch(UniqueConstraintViolationException $e) {
+                    $this->addFlash('danger', 'An account exists with this email.');
+                    return $this->redirectToRoute('user_create');
+                }
+                // redirect with flash
+                $this->addFlash('success', 'Thank you for creating an account. You are now registered and able to log in below.');
+                return $this->redirectToRoute('security_login');
+            } else {
+                $this->addFlash('danger', 'Your submission was not correct. Please correct errors below.');
+            }
+        }
+        return $this->render('crud/user/create.html.twig', [
+            'userForm' => $form->createView()
+        ]);
     }
 
     /**
@@ -36,10 +67,23 @@ class UserController extends AbstractController
     public function delete($id): Response
     {
         $user = $this->userRepository->find($id);
+        // security
+        if(!$user || in_array('ROLE_ADMIN', $user->getRoles())) {
+            $this->addFlash('dansger', 'This user can not be deleted.');
+            return $this->redirectToRoute('admin_users');
+        }
+        // set Purchases 'user_id' to null
+        $purchases = $user->getPurchases();
+        foreach($purchases as $purchase) {
+            $purchase->setUser(null);
+            $this->entityManager->persist($purchase);
+        }
+        // delete user & flush
         $this->entityManager->remove($user);
         $this->entityManager->flush();
-        return $this->redirectToRoute("admin_products");
-        return $this->redirectToRoute("home");
+        // redirect
+        $this->addFlash('success', 'User "'.$user->getFirstname().' '.$user->getLastname().'" has been removed');
+        return $this->redirectToRoute("admin_users");
     }
 
     /**

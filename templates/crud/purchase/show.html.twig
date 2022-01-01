@@ -44,13 +44,16 @@
                 {{ form_row(purchaseForm.status) }}
                 <div>
                     <button type="submit" class="btn btn-primary">Update order</button>
+                    {% set modal = modal('cancel_'~ purchase.id) %}
                     <span class="ms-2">
-                        <a class="text-danger" href="{{ path('purchase_delete',{id:purchase.id}) }}">Cancel order</a>
+                        {{ modal|trigger('Cancel order', 'text-danger')|raw }}
                     </span>
+                    
                 </div>
             </div>
         </div>
     {{ form_end(purchaseForm) }}
+    {{ modal|popup('Cancel Order', null, 'Confirm', path("purchase_delete",{id:purchase.id}))|raw }}
 
 <h3 class="mt-5">Products</h3>
 <table class="table">
@@ -65,8 +68,8 @@
         {% for item in purchase.purchaseItems %}
             <tr>
                 <td>
-                    <a href="{{ path('product', {category_slug: item.product.category.slug, slug:item.product.slug}) }}">
-                        {{item.product.name}}
+                    <a href="{{ path('product', {category_slug: item.productData.category.slug, slug:item.productData.slug}) }}">
+                        {{item.productData.name}}
                     </a>
                 </td>
                 <td><span class="mx-2">{{item.quantity}}</span></td>

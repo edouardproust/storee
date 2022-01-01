@@ -43,6 +43,12 @@ class PurchaseController extends AbstractController
     public function adminEdit($id, Request $request): Response
     {
         $purchase = $this->purchaseRepository->find($id);
+        // security
+        if(!$purchase) {
+            $this->addFlash('danger', 'This order does not exist.');
+            return $this->redirectToRoute('admin_purchases');
+        }
+        // form
         $form = $this->createForm(PurchaseAdminType::class, $purchase);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()) {
@@ -50,6 +56,7 @@ class PurchaseController extends AbstractController
             $this->entityManager->flush();
             $this->addFlash('success', 'Order updated');
         }
+        // view
         return $this->render('crud/purchase/show.html.twig', [
             'purchase' => $purchase,
             'purchaseForm' => $form->createView()

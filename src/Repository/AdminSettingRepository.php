@@ -26,11 +26,25 @@ class AdminSettingRepository extends ServiceEntityRepository
      */
     public function getOne(string $slug): ?AdminSetting
     {
-        return $this->createQueryBuilder('settings')
-            ->andWhere('settings.slug = :val')
+        return $this->createQueryBuilder('setting')
+            ->andWhere('setting.slug = :val')
             ->setParameter('val', $slug)
             ->getQuery()
             ->getOneOrNullResult()
+        ;
+    }
+
+    /**
+     * Get AdminSetting objects with a not null 'upload' value 
+     * @var string $slug The slug of the setting
+     * @return array Array of AdminSetting objects (or empty array if no results)
+     */
+    public function findWithUploadValue(): array
+    {
+        return $this->createQueryBuilder('setting')
+            ->andWhere('setting.upload IS NOT NULL')
+            ->getQuery()
+            ->getResult()
         ;
     }
 

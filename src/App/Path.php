@@ -26,6 +26,9 @@ class Path
     public function IMG_REL() { return "/img/"; }
     public function IMG_ABS() { return $this->abs($this->IMG_REL()); }
 
+    public function IMG_SETTINGS_DEFAULT_REL() { return "/img/settings/default/"; }
+    public function IMG_SETTINGS_DEFAULT_ABS() { return $this->abs($this->IMG_SETTINGS_DEFAULT_REL()); }
+
     public function UPLOADS_REL() { return "/uploads/"; }
     public function UPLOADS_ABS() { return $this->abs($this->UPLOADS_REL()); }
 

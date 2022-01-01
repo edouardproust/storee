@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\Purchase;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Purchase|null find($id, $lockMode = null, $lockVersion = null)
@@ -39,6 +40,16 @@ class PurchaseRepository extends ServiceEntityRepository
             ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findLastOfUser(User $user): ?Purchase
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.user = '.$user->getId())
+            ->orderBy('p.createdAt', 'desc')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
 }

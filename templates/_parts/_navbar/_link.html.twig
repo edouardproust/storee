@@ -1,0 +1,17 @@
+{% extends "_parts/_navbar/_navbar-link.html.twig" %}
+
+{% block navbarLink %}
+
+    {% set class = class ?? '' %}
+    {% set active = path == app.request.requestUri ? 'active' : '' %}
+    {% if icon is defined %}
+        {% set label = '<i class="' ~ icon ~ '"></i>' %}
+    {% else %}
+        {% set label = text %}
+    {% endif %}
+
+    <a href="{{ path }}" class="nav-link {{ class }} {{ active }}">
+        {{ label|raw }}
+    </a>
+
+{% endblock %}

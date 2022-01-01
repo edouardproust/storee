@@ -3,12 +3,13 @@
 namespace App\DataFixtures;
 
 use App\App\Path;
+use Faker\Factory;
+use App\Entity\User;
 use App\Entity\Upload;
 use App\Entity\AdminSetting;
-use App\App\Service\UploadService;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /** 
  * Auto-detect current environnement (dev / prod) and run fixtures accordingly.
@@ -17,11 +18,15 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class AppFixtures extends Fixture
 {
 
+    const ADMIN_USERNAME = "admin@test.com";
+    const ADMIN_PASSWORD = "admin";
+    const ADMIN_COUNTRY= 'United States'; 
+
     const ADMIN_SETTINGS_UPLOADS = [
         'logo' =>  'logo-color.png',
+        'favicon' =>  'favicon.png',
         'homeHero' => 'home-hero-bg.jpg',
     ];
-
     const ADMIN_SETTINGS_VALUES = [
         // general
         'siteName' => 'Storee',
@@ -49,6 +54,9 @@ class AppFixtures extends Fixture
         'entitiesPerAdminListPage' => 20
     ];
 
+    /** @var string */
+    private $admin;
+
     /** @var AdminSetting[] */
     private $adminSettings = [];
 
@@ -58,18 +66,22 @@ class AppFixtures extends Fixture
     /** @var Path */
     private $path;
 
-    public function __construct(Path $path)
+    public function __construct(Path $path, UserPasswordHasherInterface $hasher)
     {
         $this->path = $path;
+        $this->hasher = $hasher;
+        $this->faker = Factory::create();
     }
 
     public function load(ObjectManager $manager): void
     {
         // create entities
+        $this->createAdmin();
         $this->createAdminSettingImages();
         $this->createAdminSettings();
         
         // persist
+        $manager->persist($this->admin);
         foreach($this->adminSettingImages as $upload) {
             $manager->persist($upload);
         }
@@ -81,12 +93,30 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
+    private function createAdmin(): void
+    {
+        $admin = new User();
+        $admin
+            ->setEmail(self::ADMIN_USERNAME)
+            ->setFirstname('Sygno')
+            ->setLastname('Studio')
+            ->setPassword($this->hasher->hashPassword($admin, self::ADMIN_PASSWORD))
+            ->setRoles(['ROLE_ADMIN'])
+            ->setCreatedAt(new \DateTime('yesterday'))
+            ->setStreet($this->faker->streetAddress())
+            ->setPostcode($this->faker->postcode())
+            ->setCity($this->faker->city())
+            ->setCountry(self::ADMIN_COUNTRY)
+            ->setPhone($this->faker->phoneNumber());
+        $this->admin = $admin;
+    }
+
     private function createAdminSettingImages(): void
     {
         foreach(self::ADMIN_SETTINGS_UPLOADS as $slug => $fileName) {
             $this->adminSettingImages[$slug] = (new Upload)
                 ->setName('fixture-setting-'.$slug)
-                ->setUrl($this->path->UPLOADS_SETTINGS_REL().$fileName);
+                ->setUrl($this->path->IMG_SETTINGS_DEFAULT_REL().$fileName);
         }
     }
 

@@ -1,0 +1,60 @@
+<header class="py-3 border-bottom">
+    <nav class="navbar navbar-expand-md">
+        <div class="container-fluid">
+
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-3">
+                {% if settingImage('logo') is empty %}
+                    <span class="logo-text">{{ setting('siteName') }}</span>
+                {% else %}
+                    <img src="{{ settingImage('logo') }}" height="30" alt="logo-storee-online-store">
+                {% endif %}
+            </a>
+
+            {# Links Section 1: menu #}
+            <div class="me-auto">
+                <ul class="navbar-nav nav-pills align-items-center">
+                    {% include "_parts/_navbar/_link.html.twig" with { 
+                        text: "All products", path: path("catalog"), badge:"sales" 
+                    } %}
+                    {% include "_parts/_navbar/_dropdown.html.twig" with { 
+                        text: "Categories", items: categories(), basePath:"/category/", color:"primary" 
+                    } %}
+                    {% include "_parts/_navbar/_link.html.twig" with { 
+                        text: "About", path: path("about") 
+                    } %}
+                </ul>
+            </div>
+
+            {# Links Section 2: cart #}
+            <ul class="navbar-nav nav-pills align-items-center">
+                {% include "_parts/_navbar/_link.html.twig" with {
+                    icon: "fas fa-shopping-cart", 
+                    path: path("cart"), 
+                    badge: cartService.productsNumber is same as 0 ? null : cartService.productsNumber
+                } %}
+            </ul>
+
+            {# Links Section 3: accounts #}
+            {% if not app.user %}
+                <ul class="navbar-nav nav-pills align-items-center">
+                    {% include "_parts/_navbar/_link.html.twig" with {
+                        text: "Register", path: path("user_create"), class:"small",
+                    } %}
+                    {% include "_parts/_navbar/_button.html.twig" with {
+                        text: "Log in", path: path("security_login"), class:"btn-sm"
+                    } %}
+                </ul>
+            {% else %}  
+                <ul class="navbar-nav nav-pills align-items-center">
+                    {% include "_parts/_navbar/_link.html.twig" with {
+                        icon: "fas fa-user", path: path("account_show")
+                    } %}
+                    {% include "_parts/_navbar/_button.html.twig" with {
+                        text: "Log out", path: path("security_logout"), class:"btn-sm", color: "danger"
+                    } %}
+                </ul>
+            {% endif %}
+            
+        </div>
+    </nav>
+</header>

@@ -96,14 +96,14 @@ class PurchaseItem
         return $this;
     }
 
-    public function getProductData(): ?string
+    public function getProductData(): ?Product
     {
-        return $this->productData;
+        return unserialize($this->productData);
     }
 
-    public function setProductData(string $productData): self
+    public function setProductData(Product $productData): self
     {
-        $this->productData = $productData;
+        $this->productData = serialize($productData);
 
         return $this;
     }

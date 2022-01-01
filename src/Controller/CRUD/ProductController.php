@@ -8,6 +8,7 @@ use App\Entity\Product;
 use App\Form\ProductType;
 use App\Event\ProductViewEvent;
 use App\App\Entity\Collection;
+use App\App\Service\CartService;
 use App\App\Service\UploadService;
 use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
@@ -54,13 +55,16 @@ class ProductController extends AbstractController
     /**
      * @Route("/{category_slug}/{slug}", name="product", priority=-1)
      */
-    public function show($slug, EventDispatcherInterface $dispatcher): Response
+    public function show($slug, Request $request, EventDispatcherInterface $dispatcher): Response
     {
         $product = $this->productRepository->findOneBy(['slug' => $slug]);
         if(!$product) {
             throw $this->createNotFoundException("The product does not exist.");
         }
-        
+        if($request->isMethod('post')) {
+            $quantity = (int)$request->request->get('qty');
+            return $this->redirectToRoute("product_atc", ['id' => $product->getId(), 'qty' => $quantity]);
+        }
         // Event hook
         $productViewEvent = new ProductViewEvent($product);
         $dispatcher->dispatch($productViewEvent, 'product.view');
@@ -149,8 +153,19 @@ class ProductController extends AbstractController
     public function delete($id): Response
     {
         $product = $this->productRepository->find($id);
+        // security
+        if(!$product) return $this->redirectToRoute('admin_products');
+        // set PurchaseItems' product to null
+        $purchaseItems = $product->getPurchaseItems();
+        foreach($purchaseItems as $item) {
+            $item->setProduct(null);
+            $this->entityManager->persist($item);
+        }
+        // remove product & flush
         $this->entityManager->remove($product);
         $this->entityManager->flush();
+        // redirect
+        $this->addFlash('success', 'The product "'.$product->getName().'" has been deleted.');
         return $this->redirectToRoute("admin_products");
     }
     

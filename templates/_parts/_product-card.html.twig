@@ -15,6 +15,6 @@
         <div class="mb-2"><b>{{product.priceWithCurrency}}</b></div>
         <div class="small">{{ product.shortDescription|extract }}</div>
         <a href="{{ path("product", {slug:product.slug, category_slug:product.category.slug}) }}"class="btn mt-3 btn-outline-primary me-2">Details</a>
-        <a href="{{ path("cart_plus", {id:product.id}) }}"class="btn mt-3 btn-primary">Add to cart</a>
+        <a href="{{ path("product_atc", {id:product.id}) }}"class="btn mt-3 btn-primary">Add to cart</a>
     </div>
 </div>

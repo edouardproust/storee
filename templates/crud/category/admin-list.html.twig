@@ -29,8 +29,12 @@
                     <a href="{{ path("category", {slug:category.slug}) }}" target="_blank">{{category.name}}</a>
                 </td>
                 <td>
-                    <a href="{{path("category_edit",{id:category.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
-                    <a href="{{path("category_delete",{id:category.id})}}" class="btn btn-sm btn-danger">Delete</a>
+                    {% if category.slug is not same as 'undefined' %}
+                        <a href="{{path("category_edit",{id:category.id})}}" class="btn btn-sm btn-primary mr-2">Edit</a>
+                        {% set modal = modal('delete_'~ category.id) %}
+                        {{ modal|trigger('Delete', 'btn btn-danger btn-sm')|raw }}
+                        {{ modal|popup('Delete Category', null, 'Confirm', path("category_delete",{id:category.id}))|raw }}
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}

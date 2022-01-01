@@ -21,13 +21,9 @@ class CheckboxTransformer implements DataTransformerInterface
      */
     public function transform($value) 
     {
-        // dump($value);
         if($value == 1) {
-            $value = true;
-        } else {
-            $value = false;
+            return true;
         }
-        // dd($value);
         return false;
     }
 

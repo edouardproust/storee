@@ -13,6 +13,7 @@ use App\Repository\AdminSettingRepository;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AdminSettingService
 {
@@ -26,13 +27,14 @@ class AdminSettingService
     /** @var FlashBagInterface */
     private $flashBag;
 
-    public function __construct(EntityManagerInterface $entityManager, Path $path, AdminSettingRepository $adminSettingRepository, UploadService $uploadService, FlashBagInterface $flashBag)
+    public function __construct(EntityManagerInterface $entityManager, Path $path, AdminSettingRepository $adminSettingRepository, UploadService $uploadService, FlashBagInterface $flashBag, UrlGeneratorInterface $urlGenerator)
     {
         $this->entityManager = $entityManager;
         $this->path = $path;
         $this->adminSettingRepository = $adminSettingRepository;
         $this->uploadService = $uploadService;
         $this->flashBag = $flashBag;
+        $this->urlGenerator = $urlGenerator;
     }
 
     /**
@@ -126,6 +128,18 @@ class AdminSettingService
     {
         $itemsPerRow = $this->getValue('collectionItemsPerRow');
         return 12 / $itemsPerRow;
+    }
+
+    public function getImagesForTwig(): array
+    {
+        $settingsWithImg = $this->adminSettingRepository->findWithUploadValue();
+        $images = [];
+        foreach($settingsWithImg as $setting) {
+            $upload = $setting->getUpload();
+            $images[$setting->getSlug()] = $upload;
+            $upload->deleteUrl = $this->urlGenerator->generate('admin_setting_delete', ['id' => $setting->getId()]);
+        }
+        return $images;
     }
 
 }

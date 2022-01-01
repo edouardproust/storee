@@ -18,14 +18,15 @@
     
             <h3 class="mt-3">General</h3>
             {{ form_row(settingsForm.siteName) }}
-            {% include "_parts/_form-image.html.twig" with {input:settingsForm.logo, img:images.logo} %}
+            {% include "_parts/_form-image.html.twig" with {input:settingsForm.logo, img:images.logo ?? null} %}
+            {% include "_parts/_form-image.html.twig" with {input:settingsForm.favicon, img:images.favicon ?? null} %}
             {{ form_row(settingsForm.storeEmail) }}
             {{ form_row(settingsForm.storeEmailExpeditor) }}
             {{ form_row(settingsForm.colorMain) }}
             {{ form_row(settingsForm.colorMainHover) }}
 
             <h3>Homepage sections</h3>
-            {% include "_parts/_form-image.html.twig" with {input:settingsForm.homeHero, img:images.homeHero} %}
+            {% include "_parts/_form-image.html.twig" with {input:settingsForm.homeHero, img:images.homeHero ?? null} %}
             {{ form_row(settingsForm.homeHeroPosition) }}
             {{ form_row(settingsForm.homeHeroLayerOpacity) }}
             {{ form_row(settingsForm.homeCollectionItemsNumber) }}
