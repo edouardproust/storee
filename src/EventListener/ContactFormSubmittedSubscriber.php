@@ -18,13 +18,13 @@ class ContactFormSubmittedSubscriber implements EventSubscriberInterface
 
     /** @var MailerInterface */
     private $mailer;
-    
+
     /** @var AdminSettingService */
     private $adminSettingService;
 
     /** @var EmailService */
     private $emailService;
-    
+
 
     public function __construct(MailerInterface $mailer, AdminSettingService $adminSettingService, EmailService $emailService)
     {
@@ -46,8 +46,8 @@ class ContactFormSubmittedSubscriber implements EventSubscriberInterface
         $s = $this->adminSettingService;
         try {
             $email = (new TemplatedEmail)
-                ->to(new Address($message['email'], $message['fullname']))
-                ->from(new Address($s->getValue('storeEmail'), $s->getValue('storeEmailExpeditor')))
+                ->to(new Address($s->getValue('storeEmail'), $s->getValue('storeEmailExpeditor')))
+                ->from(new Address($message['email'], $message['fullname']))
                 ->subject('New contact message from ' . $s->getValue('siteName'))
                 ->htmlTemplate('emails/contact.html.twig')
                 ->context([
@@ -59,5 +59,4 @@ class ContactFormSubmittedSubscriber implements EventSubscriberInterface
             $this->emailService->failureFlash($e);
         }
     }
-
 }
