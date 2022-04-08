@@ -18,7 +18,3 @@ Set .env variables in a .env.local file
 ```bash
 composer install -n
 ```
-
-## Usefull commands
-
-**Regenerate APP_SECRET:** `php bin/console regenerate-app-secret`
