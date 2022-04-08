@@ -23,7 +23,7 @@ class AdminSetting
     private $slug;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="json", length=255, nullable=true)
      */
     private $value;
 
@@ -51,12 +51,12 @@ class AdminSetting
 
     public function getValue()
     {
-        return unserialize($this->value);
+        return $this->value;
     }
 
     public function setValue($value): self
     {
-        $this->value = serialize($value);
+        $this->value = $value;
 
         return $this;
     }
@@ -72,5 +72,4 @@ class AdminSetting
 
         return $this;
     }
-
 }

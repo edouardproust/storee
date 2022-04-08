@@ -39,7 +39,7 @@ class PurchaseItem
     private $total;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="json")
      */
     private $productData;
 
@@ -98,14 +98,13 @@ class PurchaseItem
 
     public function getProductData(): ?Product
     {
-        return unserialize($this->productData);
+        return $this->productData;
     }
 
     public function setProductData(Product $productData): self
     {
-        $this->productData = serialize($productData);
+        $this->productData = $productData;
 
         return $this;
     }
-
 }
