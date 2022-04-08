@@ -13,11 +13,10 @@ Storee is a simple e-commerce website featuring a cart and a complete payment sy
 
 ## Prod (deployment)
 
+Set .env variables in a .env.local file
+
 ```bash
 composer install -n
-php bin/console make:migration -n
-php bin/console doctrine:migrations:migrate -n
-php bin/console doctrine:fixtures:load -n
 ```
 
 ## Usefull commands
