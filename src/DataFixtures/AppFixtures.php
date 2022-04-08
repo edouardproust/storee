@@ -2,8 +2,8 @@
 
 namespace App\DataFixtures;
 
+use App\Config;
 use App\App\Path;
-use Faker\Factory;
 use App\Entity\User;
 use App\Entity\Upload;
 use App\Entity\AdminSetting;
@@ -18,9 +18,9 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
 
-    const ADMIN_USERNAME = "admin@test.com";
-    const ADMIN_PASSWORD = "admin";
-    const ADMIN_COUNTRY= 'United States'; 
+    const ADMIN_USERNAME = Config::ADMIN_USERNAME;
+    const ADMIN_PASSWORD = Config::ADMIN_PASSWORD;
+    const ADMIN_COUNTRY = Config::ADMIN_COUNTRY;
 
     const ADMIN_SETTINGS_UPLOADS = [
         'logo' =>  'logo-color.png',
@@ -70,7 +70,7 @@ class AppFixtures extends Fixture
     {
         $this->path = $path;
         $this->hasher = $hasher;
-        $this->faker = Factory::create();
+        $this->faker = \Faker\Factory::create();
     }
 
     public function load(ObjectManager $manager): void
@@ -79,13 +79,13 @@ class AppFixtures extends Fixture
         $this->createAdmin();
         $this->createAdminSettingImages();
         $this->createAdminSettings();
-        
+
         // persist
         $manager->persist($this->admin);
-        foreach($this->adminSettingImages as $upload) {
+        foreach ($this->adminSettingImages as $upload) {
             $manager->persist($upload);
         }
-        foreach($this->adminSettings as $adminSetting) {
+        foreach ($this->adminSettings as $adminSetting) {
             $manager->persist($adminSetting);
         }
 
@@ -113,27 +113,26 @@ class AppFixtures extends Fixture
 
     private function createAdminSettingImages(): void
     {
-        foreach(self::ADMIN_SETTINGS_UPLOADS as $slug => $fileName) {
+        foreach (self::ADMIN_SETTINGS_UPLOADS as $slug => $fileName) {
             $this->adminSettingImages[$slug] = (new Upload)
-                ->setName('fixture-setting-'.$slug)
-                ->setUrl($this->path->IMG_SETTINGS_DEFAULT_REL().$fileName);
+                ->setName('fixture-setting-' . $slug)
+                ->setUrl($this->path->IMG_SETTINGS_DEFAULT_REL() . $fileName);
         }
     }
 
     private function createAdminSettings(): void
     {
-        foreach($this->adminSettingImages as $slug => $upload) {
+        foreach ($this->adminSettingImages as $slug => $upload) {
             $setting = (new AdminSetting())
                 ->setSlug($slug)
                 ->setUpload($upload);
             $this->adminSettings[] = $setting;
         }
-        foreach(self::ADMIN_SETTINGS_VALUES as $slug => $value) {
+        foreach (self::ADMIN_SETTINGS_VALUES as $slug => $value) {
             $setting = (new AdminSetting())
                 ->setSlug($slug)
                 ->setValue($value);
             $this->adminSettings[] = $setting;
         }
     }
-    
 }
