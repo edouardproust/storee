@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\EventListener\Doctrine;
 
 use App\Entity\PurchaseItem;
@@ -18,16 +19,15 @@ class PurchaseItemListener
 
     private function setTotal(PurchaseItem $item): void
     {
-        if(!$item->getTotal()) {
+        if (!$item->getTotal()) {
             $item->setTotal($item->getProduct()->getPrice() * $item->getQuantity());
         }
     }
 
     private function setProductData(PurchaseItem $item): void
     {
-        if(empty($item->getProductData())) {
+        if (empty($item->getProductData())) {
             $item->setProductData($item->getProduct());
         }
     }
-
 }

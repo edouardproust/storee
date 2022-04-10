@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PurchaseItem
 {
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -98,13 +99,25 @@ class PurchaseItem
 
     public function getProductData(): ?Product
     {
-        return $this->productData;
+        if (is_array($this->productData)) {
+            $product = new Product;
+            foreach ($this->productData as $var => $value) {
+                if (!in_array($var, ['id', 'category', 'createdAt', 'mainImage', 'purchaseItems'])) {
+                    $setFn = 'set' . ucFirst($var);
+                    $product->$setFn($value);
+                }
+            }
+        }
+        return $product ?? $this->productData;
     }
 
-    public function setProductData(Product $productData): self
+    public function setProductData($productData): self
     {
-        $this->productData = $productData;
-
+        if ($productData instanceof Product) {
+            $product = $productData->getVars();
+            $product['category']->setSlug($productData->getCategory()->getSlug());
+        }
+        $this->productData = $product ?? $productData;
         return $this;
     }
 }

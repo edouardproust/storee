@@ -82,6 +82,11 @@ class Product
         $this->purchaseItems = new ArrayCollection();
     }
 
+    public function getVars()
+    {
+        return get_object_vars($this);
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,7 +109,7 @@ class Product
         return $this->price;
     }
 
-    public function getFloatPrice(): ? float
+    public function getFloatPrice(): ?float
     {
         return $this->price / 100;
     }
@@ -112,10 +117,10 @@ class Product
     public function getPriceWithCurrency($currencySign = "$", $before = true): ?string
     {
         $floatPrice = $this->getFloatPrice();
-        if($currencySign == "€") {
+        if ($currencySign == "€") {
             $floatPrice = str_replace(".", ",", $this->getFloatPrice());
         }
-        if($before) {
+        if ($before) {
             return $currencySign . $floatPrice;
         }
         return $floatPrice . $currencySign;
@@ -259,5 +264,4 @@ class Product
     {
         $this->purchases += $quantity;
     }
-    
 }

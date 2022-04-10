@@ -32,7 +32,7 @@
                                     <span>{{ item.quantity }}x </span>
                                     <span>
                                         {% set data = item.productData %}
-                                        <a href="{{ path('product',{category_slug:data.category.slug, slug:data.slug}) }}">
+                                        <a href="{{ path('product',{category_slug: 'undefined', slug:data.slug}) }}">
                                             {{ data.name }}</span>
                                         </a>
                                     <span> ({{ item.total|price }})</span>
