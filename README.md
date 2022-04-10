@@ -21,3 +21,8 @@ composer install -n
 ```
 
 3. Update **src/Config.php**
+
+## Usefull commands
+
+- Clear cache on prod: `cache:clear --env=prod --no-debug`
+
