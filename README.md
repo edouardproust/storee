@@ -2,7 +2,7 @@
 
 Storee is a simple e-commerce website featuring a cart and a complete payment system using Stipe Payments.
 
-![image](https://user-images.githubusercontent.com/45925914/176815791-0716a2c8-1a4b-45be-b01a-31e1bab68d7a.png)
+![image](https://user-images.githubusercontent.com/45925914/176816095-f31819bf-372f-48e6-8fe7-92680783f792.png)
 ![image](https://user-images.githubusercontent.com/45925914/176815828-e1f9d0ed-9139-42a3-aec2-6251a6410a97.png)
 ![image](https://user-images.githubusercontent.com/45925914/176815871-2d0fc676-167f-4d88-9efd-08487c1204c6.png)
 
